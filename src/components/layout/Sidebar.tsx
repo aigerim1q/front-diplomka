@@ -17,12 +17,12 @@ const SUPER_ADMIN_NAV: NavItem[] = [
 ]
 
 const CONSTRUCTION_NAV: NavItem[] = [
-  { labelKey: 'nav.dashboard', icon: 'dashboard', to: '/dashboard' },
+  { labelKey: 'nav.dashboard', icon: 'dashboard', to: '/construction/dashboard' },
   { labelKey: 'nav.complexes', icon: 'location_city', to: '/complexes' },
 ]
 
 const KSK_NAV: NavItem[] = [
-  { labelKey: 'nav.dashboard', icon: 'dashboard', to: '/dashboard' },
+  { labelKey: 'nav.dashboard', icon: 'dashboard', to: '/ksk/dashboard' },
   { labelKey: 'nav.residents', icon: 'group', to: '/residents' },
 ]
 

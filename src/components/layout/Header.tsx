@@ -12,14 +12,15 @@ const Header = () => {
     '/complexes': t('complexes.addComplex'),
     '/residents': t('residents.addResident'),
   }
-
-  const PAGE_TITLES: Record<string, string> = {
-    '/dashboard': t('dashboard.title'),
-    '/users': t('users.title'),
-    '/tenants': t('tenants.title'),
-    '/complexes': t('complexes.title'),
-    '/residents': t('residents.title'),
-  }
+const PAGE_TITLES: Record<string, string> = {
+  '/dashboard': t('dashboard.title'),
+  '/construction/dashboard': t('dashboard.title'),
+  '/ksk/dashboard': t('dashboard.title'),
+  '/users': t('users.title'),
+  '/tenants': t('tenants.title'),
+  '/complexes': t('complexes.title'),
+  '/residents': t('residents.title'),
+}
 
   const title = PAGE_TITLES[location.pathname] ?? 'MyHome'
   const addLabel = ADD_BUTTONS[location.pathname]

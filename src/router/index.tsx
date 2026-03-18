@@ -7,14 +7,16 @@ import ChangePasswordPage from '@/pages/auth/ChangePasswordPage'
 import UnauthorizedPage from '@/pages/auth/UnauthorizedPage'
 
 // Super Admin pages
-import DashboardPage from '@/pages/super-admin/DashboardPage'
+import SuperAdminDashboardPage from '@/pages/super-admin/DashboardPage'
 import UsersPage from '@/pages/super-admin/UsersPage'
 import TenantsPage from '@/pages/super-admin/TenantsPage'
 
 // Construction pages
+import ConstructionDashboardPage from '@/pages/construction/DashboardPage'
 import ComplexesPage from '@/pages/construction/ComplexesPage'
 
 // KSK pages
+import KskDashboardPage from '@/pages/ksk/DashboardPage'
 import ResidentsPage from '@/pages/ksk/ResidentsPage'
 
 // Layout
@@ -26,14 +28,14 @@ export const router = createBrowserRouter([
   { path: '/change-password', element: <ChangePasswordPage /> },
   { path: '/unauthorized', element: <UnauthorizedPage /> },
 
-  // SuperAdmin маршруты
+  // SuperAdmin маршруты (role: 1)
   {
     element: <ProtectedRoute allowedRoles={[1]} />,
     children: [
       {
         element: <DashboardLayout />,
         children: [
-          { path: '/dashboard', element: <DashboardPage /> },
+          { path: '/dashboard', element: <SuperAdminDashboardPage /> },
           { path: '/users', element: <UsersPage /> },
           { path: '/tenants', element: <TenantsPage /> },
         ],
@@ -41,28 +43,28 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // ConstructionCompanyAdmin маршруты
+  // ConstructionCompanyAdmin маршруты (role: 2)
   {
     element: <ProtectedRoute allowedRoles={[2]} />,
     children: [
       {
         element: <DashboardLayout />,
         children: [
-          { path: '/dashboard', element: <DashboardPage /> },
+          { path: '/construction/dashboard', element: <ConstructionDashboardPage /> },
           { path: '/complexes', element: <ComplexesPage /> },
         ],
       },
     ],
   },
 
-  // KskAdmin маршруты
+  // KskAdmin маршруты (role: 3)
   {
     element: <ProtectedRoute allowedRoles={[3]} />,
     children: [
       {
         element: <DashboardLayout />,
         children: [
-          { path: '/dashboard', element: <DashboardPage /> },
+          { path: '/ksk/dashboard', element: <KskDashboardPage /> },
           { path: '/residents', element: <ResidentsPage /> },
         ],
       },

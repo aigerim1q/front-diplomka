@@ -17,8 +17,8 @@ const ROLE_MAP: Record<string, number> = {
 
 const ROLE_ROUTES: Record<number, string> = {
   1: '/dashboard',
-  2: '/dashboard',
-  3: '/dashboard',
+  2: '/construction/dashboard',
+  3: '/ksk/dashboard',
   4: '/dashboard',
   5: '/dashboard',
 }
@@ -26,13 +26,15 @@ const ROLE_ROUTES: Record<number, string> = {
 const parseJwt = (token: string): AuthUser => {
   const base64 = token.split('.')[1]
   const decoded = JSON.parse(atob(base64))
-  const role = ROLE_MAP[decoded.role] ?? 1
+  const roleValue = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+    ?? decoded.role
+  const role = ROLE_MAP[roleValue] ?? 1
   return {
-    userId: decoded.userId || decoded.sub,
+    userId: decoded.sub,
     email: decoded.email,
     role: role as UserRole,
     tenantId: decoded.tenantId,
-    mustChangePassword: false,
+    mustChangePassword: decoded.mustChangePassword === 'true' || decoded.mustChangePassword === true,
   }
 }
 
@@ -50,7 +52,6 @@ const LoginPage = () => {
       })
 
       const { accessToken, refreshToken, mustChangePassword } = response.data
-
       setTokens(accessToken, refreshToken)
 
       const user = parseJwt(accessToken)
@@ -58,6 +59,9 @@ const LoginPage = () => {
       setUser(user)
 
       if (mustChangePassword) {
+        // Сохраняем credentials для автологина после смены пароля
+        sessionStorage.setItem('pending_email', data.email)
+        sessionStorage.setItem('pending_password', data.password)
         navigate('/change-password', { replace: true })
         return
       }
@@ -65,8 +69,15 @@ const LoginPage = () => {
       navigate(ROLE_ROUTES[user.role] ?? '/login', { replace: true })
     } catch (err: any) {
       const code = err?.response?.data?.code
+        || err?.response?.data?.errorCode
+
       if (code === 'AUTH_INVALID_CREDENTIALS') {
         setServerError('Неверный email или пароль')
+      } else if (code === 'AUTH_MUST_CHANGE_PASSWORD') {
+        // Бек не даёт токен — сохраняем credentials и редиректим
+        sessionStorage.setItem('pending_email', data.email)
+        sessionStorage.setItem('pending_password', data.password)
+        navigate('/change-password', { replace: true })
       } else {
         setServerError('Произошла ошибка. Попробуйте позже')
       }
