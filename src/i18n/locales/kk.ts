@@ -41,6 +41,9 @@ export default {
     tenants: 'Ұйымдар',
     complexes: 'Тұрғын үй кешендері',
     residents: 'Тұрғындар',
+    requests: 'Өтінімдер',
+    announcements: 'Хабарландырулар',
+    polls: 'Сауалнамалар',
   },
   dashboard: {
     title: 'Шолу',

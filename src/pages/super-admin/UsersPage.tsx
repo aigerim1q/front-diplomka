@@ -35,6 +35,7 @@ const UsersPage = () => {
     queryFn: () => usersApi.getAll({
       page,
       pageSize: PAGE_SIZE,
+      // Если роль не выбрана — передаём undefined, но фильтруем жильцов (role=5) на фронте
       role: role ? Number(role) as any : undefined,
       status: status ? Number(status) as any : undefined,
     }),
@@ -78,7 +79,7 @@ const UsersPage = () => {
     }
   }
 
-  const allUsers = data?.data.items ?? []
+  const allUsers = (data?.data.items ?? []).filter((u) => u.role !== 5)
   const users = search
     ? allUsers.filter(
         (u) =>

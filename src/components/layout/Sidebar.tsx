@@ -17,13 +17,17 @@ const SUPER_ADMIN_NAV: NavItem[] = [
 ]
 
 const CONSTRUCTION_NAV: NavItem[] = [
-  { labelKey: 'nav.dashboard', icon: 'dashboard', to: '/dashboard' },
-  { labelKey: 'nav.complexes', icon: 'location_city', to: '/complexes' },
+  { labelKey: 'nav.dashboard', icon: 'dashboard', to: '/construction-dashboard' },
+  { labelKey: 'nav.complexes', icon: 'home_work', to: '/complexes' },
+  { labelKey: 'nav.announcements', icon: 'campaign', to: '/construction-announcements' },
 ]
 
 const KSK_NAV: NavItem[] = [
-  { labelKey: 'nav.dashboard', icon: 'dashboard', to: '/dashboard' },
+  { labelKey: 'nav.dashboard', icon: 'dashboard', to: '/ksk-dashboard' },
+  { labelKey: 'nav.requests', icon: 'move_to_inbox', to: '/requests' },
   { labelKey: 'nav.residents', icon: 'group', to: '/residents' },
+  { labelKey: 'nav.announcements', icon: 'campaign', to: '/announcements' },
+  { labelKey: 'nav.polls', icon: 'poll', to: '/polls' },
 ]
 
 const ROLE_NAV: Record<number, NavItem[]> = {

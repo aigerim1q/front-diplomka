@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#2563EB",
+        primary: "#065F46",
       },
       fontFamily: {
         display: ["Public Sans", "sans-serif"],

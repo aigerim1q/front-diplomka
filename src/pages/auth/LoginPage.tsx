@@ -17,18 +17,22 @@ const ROLE_MAP: Record<string, number> = {
 
 const ROLE_ROUTES: Record<number, string> = {
   1: '/dashboard',
-  2: '/dashboard',
-  3: '/dashboard',
+  2: '/construction-dashboard',
+  3: '/residents',
   4: '/dashboard',
   5: '/dashboard',
 }
 
+// Ключ роли в JWT от .NET Identity
+const ROLE_CLAIM = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
+
 const parseJwt = (token: string): AuthUser => {
   const base64 = token.split('.')[1]
   const decoded = JSON.parse(atob(base64))
-  const role = ROLE_MAP[decoded.role] ?? 1
+  const roleClaim = decoded[ROLE_CLAIM] ?? decoded.role
+  const role = ROLE_MAP[roleClaim] ?? 1
   return {
-    userId: decoded.userId || decoded.sub,
+    userId: decoded.sub,
     email: decoded.email,
     role: role as UserRole,
     tenantId: decoded.tenantId,
