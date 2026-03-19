@@ -41,6 +41,9 @@ export default {
     tenants: 'Организации',
     complexes: 'Жилые комплексы',
     residents: 'Жильцы',
+    requests: 'Заявки',
+    announcements: 'Объявления',
+    polls: 'Опросы',
   },
   dashboard: {
     title: 'Обзор',

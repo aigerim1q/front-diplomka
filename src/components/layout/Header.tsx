@@ -15,10 +15,16 @@ const Header = () => {
 
   const PAGE_TITLES: Record<string, string> = {
     '/dashboard': t('dashboard.title'),
+    '/ksk-dashboard': t('dashboard.title'),
     '/users': t('users.title'),
     '/tenants': t('tenants.title'),
     '/complexes': t('complexes.title'),
+    '/construction-dashboard': t('dashboard.title'),
+    '/construction-announcements': t('nav.announcements'),
     '/residents': t('residents.title'),
+    '/requests': t('nav.requests'),
+    '/announcements': t('nav.announcements'),
+    '/polls': t('nav.polls'),
   }
 
   const title = PAGE_TITLES[location.pathname] ?? 'MyHome'

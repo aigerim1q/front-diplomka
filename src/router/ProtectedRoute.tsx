@@ -3,21 +3,32 @@ import { useAuth } from '@/hooks/useAuth'
 import { UserRole } from '@/types'
 
 interface ProtectedRouteProps {
-  allowedRoles: UserRole[]
+  allowedRoles?: UserRole[]
+  requireChangePassword?: boolean
 }
 
-const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ allowedRoles, requireChangePassword }: ProtectedRouteProps) => {
   const { isAuthenticated, user } = useAuth()
 
+  // Не авторизован — на логин
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
+  // Маршрут только для смены пароля
+  if (requireChangePassword) {
+    if (!user?.mustChangePassword) {
+      return <Navigate to="/dashboard" replace />
+    }
+    return <Outlet />
+  }
+
+  // Обычный защищённый маршрут — если mustChangePassword, гоним на смену пароля
   if (user?.mustChangePassword) {
     return <Navigate to="/change-password" replace />
   }
 
-  if (!allowedRoles.includes(user!.role)) {
+  if (allowedRoles && !allowedRoles.includes(user!.role)) {
     return <Navigate to="/unauthorized" replace />
   }
 

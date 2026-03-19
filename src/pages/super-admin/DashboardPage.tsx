@@ -98,7 +98,7 @@ const DashboardPage = () => {
       </div>
 
       {/* Recent Users Table */}
-      <RecentUsersTable users={usersData?.data.items ?? []} />
+      <RecentUsersTable users={(usersData?.data.items ?? []).filter((u) => u.role !== 5)} />
     </div>
   )
 }
