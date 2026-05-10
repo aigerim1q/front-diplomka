@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { toast } from 'sonner'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -17,6 +17,13 @@ const schema = z.object({
     })
     .optional()
     .or(z.literal('')),
+  apartmentNumber: z.string().min(1, 'Обязательное поле'),
+  building: z.string().min(1, 'Обязательное поле'),
+  entrance: z.string().min(1, 'Обязательное поле'),
+  floor: z.preprocess(
+    (v) => (v === '' || v === undefined || v === null ? undefined : Number(v)),
+    z.number({ required_error: 'Обязательное поле', invalid_type_error: 'Введите число' }).int().positive('Должно быть положительным числом')
+  ),
 })
 
 type AddResidentForm = z.infer<typeof schema>
@@ -76,8 +83,7 @@ const PhoneInput = ({
 
 const AddResidentModal = ({ isOpen, onClose }: AddResidentModalProps) => {
   const queryClient = useQueryClient()
-  const [createdResident, setCreatedResident] = useState<{ email: string; password: string } | null>(null)
-  const [copied, setCopied] = useState(false)
+
 
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm<AddResidentForm>({
     resolver: zodResolver(schema),
@@ -86,10 +92,13 @@ const AddResidentModal = ({ isOpen, onClose }: AddResidentModalProps) => {
 
   const { mutate, isPending, error: serverError } = useMutation({
     mutationFn: kskResidentsApi.create,
-    onSuccess: (res) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ksk-residents'] })
       reset({ phoneNumber: '+7' })
-      setCreatedResident({ email: res.data.email, password: res.data.temporaryPassword })
+      toast.success('Жилец успешно создан', {
+        description: 'Временный пароль отправлен на email жильца',
+      })
+      onClose()
     },
   })
 
@@ -99,68 +108,16 @@ const AddResidentModal = ({ isOpen, onClose }: AddResidentModalProps) => {
       firstName: data.firstName,
       lastName: data.lastName,
       phoneNumber: data.phoneNumber === '+7' ? undefined : data.phoneNumber,
+      apartmentNumber: data.apartmentNumber,
+      building: data.building,
+      entrance: data.entrance,
+      floor: data.floor,
     })
   }
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(createdResident?.password ?? '')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
   const handleClose = () => {
-    setCreatedResident(null)
-    setCopied(false)
     reset({ phoneNumber: '+7' })
     onClose()
-  }
-
-  // Экран успеха
-  if (createdResident) {
-    return (
-      <Modal isOpen={isOpen} onClose={handleClose} title="Жилец создан!">
-        <div className="space-y-4">
-          <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 space-y-3">
-            <div className="flex items-center gap-2 text-emerald-700">
-              <span className="material-symbols-outlined text-emerald-500">check_circle</span>
-              <span className="font-semibold text-sm">Аккаунт успешно создан</span>
-            </div>
-            <div className="space-y-2">
-              <div>
-                <p className="text-xs text-slate-500 mb-1">Email</p>
-                <p className="font-mono text-sm font-bold text-slate-800">{createdResident.email}</p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 mb-1">Временный пароль</p>
-                <div className="flex items-center gap-2">
-                  <p className="font-mono text-sm font-bold text-slate-800 bg-white border border-slate-200 rounded-lg px-3 py-2 flex-1">
-                    {createdResident.password}
-                  </p>
-                  <button
-                    onClick={handleCopy}
-                    className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-slate-500">
-                      {copied ? 'check' : 'content_copy'}
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <p className="text-xs text-red-500 flex items-center gap-1">
-            <span className="material-symbols-outlined text-[14px]">warning</span>
-            Сохраните пароль — он больше не будет показан!
-          </p>
-          <button
-            onClick={handleClose}
-            className="w-full py-2 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors"
-          >
-            Готово
-          </button>
-        </div>
-      </Modal>
-    )
   }
 
   return (
@@ -207,6 +164,57 @@ const AddResidentModal = ({ isOpen, onClose }: AddResidentModalProps) => {
             )}
           />
           {errors.phoneNumber && <p className="mt-1 text-xs text-red-500">{errors.phoneNumber.message}</p>}
+        </div>
+
+        {/* Адрес проживания */}
+        <div className="border-t border-slate-100 pt-3">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+            Адрес проживания
+          </p>
+
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Номер квартиры</label>
+              <input
+                {...register('apartmentNumber')}
+                className={inputClass(!!errors.apartmentNumber)}
+                placeholder="42"
+              />
+              {errors.apartmentNumber && <p className="mt-1 text-xs text-red-500">{errors.apartmentNumber.message}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Корпус</label>
+              <input
+                {...register('building')}
+                className={inputClass(!!errors.building)}
+                placeholder="А"
+              />
+              {errors.building && <p className="mt-1 text-xs text-red-500">{errors.building.message}</p>}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Подъезд</label>
+              <input
+                {...register('entrance')}
+                className={inputClass(!!errors.entrance)}
+                placeholder="3"
+              />
+              {errors.entrance && <p className="mt-1 text-xs text-red-500">{errors.entrance.message}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Этаж</label>
+              <input
+                {...register('floor')}
+                type="number"
+                min={1}
+                className={inputClass(!!errors.floor)}
+                placeholder="5"
+              />
+              {errors.floor && <p className="mt-1 text-xs text-red-500">{errors.floor.message}</p>}
+            </div>
+          </div>
         </div>
 
         <div className="flex gap-3 justify-end pt-2">

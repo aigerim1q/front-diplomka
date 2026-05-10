@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -27,21 +28,39 @@ const inputClass = (error?: boolean) =>
 
 const AddComplexModal = ({ isOpen, onClose }: AddComplexModalProps) => {
   const queryClient = useQueryClient()
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<AddComplexForm>({
     resolver: zodResolver(schema),
   })
 
   const { mutate, isPending, error: serverError } = useMutation({
-    mutationFn: complexesApi.create,
+    mutationFn: (data: AddComplexForm) => complexesApi.create(data, imageFile),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['complexes'] })
-      reset()
-      onClose()
+      handleClose()
     },
   })
 
-  const handleClose = () => { reset(); onClose() }
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setImageFile(file)
+    setImagePreview(URL.createObjectURL(file))
+  }
+
+  const handleRemoveImage = () => {
+    setImageFile(null)
+    setImagePreview(null)
+  }
+
+  const handleClose = () => {
+    reset()
+    setImageFile(null)
+    setImagePreview(null)
+    onClose()
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Добавить жилой комплекс">
@@ -51,6 +70,36 @@ const AddComplexModal = ({ isOpen, onClose }: AddComplexModalProps) => {
             Ошибка при создании комплекса
           </div>
         )}
+
+        {/* Фото */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">
+            Фото <span className="text-slate-400 font-normal">(необязательно, jpg/png, до 5 МБ)</span>
+          </label>
+          {imagePreview ? (
+            <div className="relative rounded-xl overflow-hidden border border-slate-200 aspect-video">
+              <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full p-1 shadow transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px] text-slate-600">close</span>
+              </button>
+            </div>
+          ) : (
+            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-200 rounded-xl p-6 cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
+              <span className="material-symbols-outlined text-3xl text-slate-300">add_photo_alternate</span>
+              <span className="text-sm text-slate-400">Нажмите чтобы загрузить фото</span>
+              <input
+                type="file"
+                accept="image/jpeg,image/png"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+            </label>
+          )}
+        </div>
 
         <div>
           <label className="block text-xs font-semibold text-slate-600 mb-1">Название</label>

@@ -14,9 +14,9 @@ const PAGE_SIZE = 10
 const ResidentsPage = () => {
   const queryClient = useQueryClient()
 
+  const [tab, setTab] = useState<'all' | 'active' | 'blocked'>('all')
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
-  const [status, setStatus] = useState('')
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editResident, setEditResident] = useState<Resident | null>(null)
   const [resetResident, setResetResident] = useState<Resident | null>(null)
@@ -26,20 +26,21 @@ const ResidentsPage = () => {
     resident: Resident | null
   }>({ isOpen: false, type: 'block', resident: null })
 
-  // Слушаем кнопку "Добавить" из Header
   useEffect(() => {
     const handler = () => setIsAddOpen(true)
     window.addEventListener('openAddModal', handler)
     return () => window.removeEventListener('openAddModal', handler)
   }, [])
 
+  const statusParam = tab === 'active' ? 1 : tab === 'blocked' ? 2 : undefined
+
   const { data, isLoading } = useQuery({
-    queryKey: ['ksk-residents', page, status],
+    queryKey: ['ksk-residents', page, tab],
     queryFn: () =>
       kskResidentsApi.getAll({
         page,
         pageSize: PAGE_SIZE,
-        status: status ? (Number(status) as 1 | 2) : undefined,
+        status: statusParam,
       }),
   })
 
@@ -84,6 +85,27 @@ const ResidentsPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Табы */}
+      <div className="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm w-fit">
+        {([
+          { key: 'all', label: 'Все' },
+          { key: 'active', label: 'Активные' },
+          { key: 'blocked', label: 'Заблокированные' },
+        ] as const).map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => { setTab(key); setPage(1) }}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              tab === key
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* Фильтры */}
       <div className="flex gap-4 items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
         <div className="relative flex-1">
@@ -93,22 +115,13 @@ const ResidentsPage = () => {
           <input
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-[#065F46]/20 focus:border-[#065F46] outline-none text-sm"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
             placeholder="Поиск по имени или email..."
           />
         </div>
-        <select
-          value={status}
-          onChange={(e) => { setStatus(e.target.value); setPage(1) }}
-          className="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-[#065F46]/20 focus:border-[#065F46] outline-none text-sm w-44"
-        >
-          <option value="">Все статусы</option>
-          <option value="1">Активные</option>
-          <option value="2">Заблокированные</option>
-        </select>
         <button
-          onClick={() => { setSearch(''); setStatus(''); setPage(1) }}
-          className="px-4 py-2 text-slate-600 font-medium text-sm hover:text-[#065F46] transition-colors"
+          onClick={() => { setSearch(''); setPage(1) }}
+          className="px-4 py-2 text-slate-600 font-medium text-sm hover:text-primary transition-colors"
         >
           Сбросить
         </button>

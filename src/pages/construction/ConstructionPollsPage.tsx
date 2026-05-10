@@ -6,8 +6,8 @@ import {
   VOTING_STATUS_LABELS,
   VOTING_STATUS_COLORS,
 } from '@/types'
-import CreateVotingModal from './components/modals/CreateVotingModal'
-import VotingDetailModal from './components/modals/VotingDetailModal'
+import CreateVotingModal from '@/pages/ksk/components/modals/CreateVotingModal'
+import VotingDetailModal from '@/pages/ksk/components/modals/VotingDetailModal'
 
 const TABS: { key: 'all' | VotingStatus; label: string }[] = [
   { key: 'all', label: 'Все' },
@@ -16,7 +16,7 @@ const TABS: { key: 'all' | VotingStatus; label: string }[] = [
   { key: 3, label: 'Завершённые' },
 ]
 
-const PollsPage = () => {
+const ConstructionPollsPage = () => {
   const [tab, setTab] = useState<'all' | VotingStatus>('all')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [selectedVotingId, setSelectedVotingId] = useState<string | null>(null)
@@ -75,10 +75,7 @@ const PollsPage = () => {
           {votings.map((voting) => (
             <div
               key={voting.id}
-              onClick={() => {
-                setIsCreateOpen(false)
-                setSelectedVotingId(voting.id)
-              }}
+              onClick={() => setSelectedVotingId(voting.id)}
               className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
             >
               <div className="flex items-start justify-between gap-4">
@@ -126,4 +123,4 @@ const PollsPage = () => {
   )
 }
 
-export default PollsPage
+export default ConstructionPollsPage

@@ -15,12 +15,14 @@ import TenantsPage from '@/pages/super-admin/TenantsPage'
 import ConstructionDashboardPage from '@/pages/construction/ConstructionDashboardPage'
 import ComplexesPage from '@/pages/construction/ComplexesPage'
 import ConstructionAnnouncementsPage from '@/pages/construction/ConstructionAnnouncementsPage'
+import ConstructionPollsPage from '@/pages/construction/ConstructionPollsPage'
 
 // KSK pages
 import KskDashboardPage from '@/pages/ksk/KskDashboardPage'
 import ResidentsPage from '@/pages/ksk/ResidentsPage'
+import WorkersPage from '@/pages/ksk/WorkersPage'
 import RequestsPage from '@/pages/ksk/RequestsPage'
-import AnnouncementsPage from '@/pages/ksk/AnnouncementsPage'
+import AnnouncementsPage from '@/pages/ksk/AnnouncementsPage_ksk'
 import PollsPage from '@/pages/ksk/PollsPage'
 
 // Layout
@@ -64,6 +66,7 @@ export const router = createBrowserRouter([
           { path: '/construction-dashboard', element: <ConstructionDashboardPage /> },
           { path: '/complexes', element: <ComplexesPage /> },
           { path: '/construction-announcements', element: <ConstructionAnnouncementsPage /> },
+          { path: '/construction-polls', element: <ConstructionPollsPage /> },
         ],
       },
     ],
@@ -78,6 +81,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/ksk-dashboard', element: <KskDashboardPage /> },
           { path: '/residents', element: <ResidentsPage /> },
+          { path: '/workers', element: <WorkersPage /> },
           { path: '/requests', element: <RequestsPage /> },
           { path: '/announcements', element: <AnnouncementsPage /> },
           { path: '/polls', element: <PollsPage /> },

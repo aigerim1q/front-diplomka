@@ -20,7 +20,7 @@ const ResidentsTable = ({
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="bg-slate-50 border-b border-slate-200">
-            {['Жилец', 'Email', 'Телефон', 'Дата регистрации', 'Статус', 'Действия'].map((col) => (
+            {['Жилец', 'Email', 'Телефон', 'Квартира', 'Дата регистрации', 'Статус', 'Действия'].map((col) => (
               <th
                 key={col}
                 className={`px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider ${col === 'Действия' ? 'text-right' : ''}`}
@@ -63,6 +63,24 @@ const ResidentsTable = ({
                 {/* Телефон */}
                 <td className="px-6 py-4 text-sm text-slate-500">
                   {resident.phoneNumber ?? '—'}
+                </td>
+
+                {/* Квартира */}
+                <td className="px-6 py-4 text-sm text-slate-500">
+                  {resident.apartmentNumber ? (
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-medium text-slate-700">кв. {resident.apartmentNumber}</span>
+                      {(resident.building || resident.entrance || resident.floor) && (
+                        <span className="text-xs text-slate-400">
+                          {[
+                            resident.building ? `корп. ${resident.building}` : null,
+                            resident.entrance ? `подъезд ${resident.entrance}` : null,
+                            resident.floor ? `этаж ${resident.floor}` : null,
+                          ].filter(Boolean).join(', ')}
+                        </span>
+                      )}
+                    </div>
+                  ) : '—'}
                 </td>
 
                 {/* Дата */}

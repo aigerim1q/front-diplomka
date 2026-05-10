@@ -5,6 +5,7 @@ export interface Complex {
   city: string
   region: string
   description?: string
+  imageUrl?: string | null
   isActive: boolean
   linkedKskTenantId?: string | null
   createdAt: string

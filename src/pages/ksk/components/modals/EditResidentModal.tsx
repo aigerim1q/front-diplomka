@@ -17,6 +17,13 @@ const schema = z.object({
     })
     .optional()
     .or(z.literal('')),
+  apartmentNumber: z.string().min(1, 'Обязательное поле'),
+  building: z.string().min(1, 'Обязательное поле'),
+  entrance: z.string().min(1, 'Обязательное поле'),
+  floor: z.preprocess(
+    (v) => (v === '' || v === undefined || v === null ? undefined : Number(v)),
+    z.number({ required_error: 'Обязательное поле', invalid_type_error: 'Введите число' }).int().positive('Должно быть положительным числом')
+  ),
 })
 
 type EditResidentForm = z.infer<typeof schema>
@@ -80,7 +87,6 @@ const EditResidentModal = ({ isOpen, onClose, resident }: EditResidentModalProps
 
   useEffect(() => {
     if (resident) {
-      // Если номер есть но не начинается на +7 — добавляем префикс
       const phone = resident.phoneNumber
         ? resident.phoneNumber.startsWith('+7')
           ? resident.phoneNumber
@@ -91,6 +97,10 @@ const EditResidentModal = ({ isOpen, onClose, resident }: EditResidentModalProps
         firstName: resident.firstName ?? '',
         lastName: resident.lastName ?? '',
         phoneNumber: phone,
+        apartmentNumber: resident.apartmentNumber ?? '',
+        building: resident.building ?? '',
+        entrance: resident.entrance ?? '',
+        floor: resident.floor ?? undefined,
       })
     }
   }, [resident, reset])
@@ -100,6 +110,10 @@ const EditResidentModal = ({ isOpen, onClose, resident }: EditResidentModalProps
       firstName: data.firstName,
       lastName: data.lastName,
       phoneNumber: data.phoneNumber === '+7' ? undefined : data.phoneNumber,
+      apartmentNumber: data.apartmentNumber,
+      building: data.building,
+      entrance: data.entrance,
+      floor: data.floor,
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ksk-residents'] })
@@ -150,6 +164,57 @@ const EditResidentModal = ({ isOpen, onClose, resident }: EditResidentModalProps
             )}
           />
           {errors.phoneNumber && <p className="mt-1 text-xs text-red-500">{errors.phoneNumber.message}</p>}
+        </div>
+
+        {/* Адрес проживания */}
+        <div className="border-t border-slate-100 pt-3">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+            Адрес проживания
+          </p>
+
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Номер квартиры</label>
+              <input
+                {...register('apartmentNumber')}
+                className={inputClass(!!errors.apartmentNumber)}
+                placeholder="42"
+              />
+              {errors.apartmentNumber && <p className="mt-1 text-xs text-red-500">{errors.apartmentNumber.message}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Корпус</label>
+              <input
+                {...register('building')}
+                className={inputClass(!!errors.building)}
+                placeholder="А"
+              />
+              {errors.building && <p className="mt-1 text-xs text-red-500">{errors.building.message}</p>}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Подъезд</label>
+              <input
+                {...register('entrance')}
+                className={inputClass(!!errors.entrance)}
+                placeholder="3"
+              />
+              {errors.entrance && <p className="mt-1 text-xs text-red-500">{errors.entrance.message}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Этаж</label>
+              <input
+                {...register('floor')}
+                type="number"
+                min={1}
+                className={inputClass(!!errors.floor)}
+                placeholder="5"
+              />
+              {errors.floor && <p className="mt-1 text-xs text-red-500">{errors.floor.message}</p>}
+            </div>
+          </div>
         </div>
 
         <div className="flex gap-3 justify-end pt-2">
