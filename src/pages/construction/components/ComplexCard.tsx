@@ -16,16 +16,23 @@ const ComplexCard = ({ complex, onEdit, onLinkKsk, onActivate, onDeactivate }: C
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:border-primary/30 transition-all group">
       {/* Превью изображения */}
       <div className="aspect-video bg-gradient-to-br from-slate-200 to-slate-300 relative overflow-hidden">
+        {complex.imageUrl ? (
+          <img
+            src={complex.imageUrl}
+            alt={complex.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="material-symbols-outlined text-6xl text-slate-400/50">apartment</span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         {/* Статус бейдж */}
         <div className={`absolute top-3 right-3 text-white text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider ${
           isActive ? 'bg-emerald-500' : 'bg-slate-400'
         }`}>
           {isActive ? 'Активен' : 'Неактивен'}
-        </div>
-        {/* Иконка ЖК */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="material-symbols-outlined text-6xl text-slate-400/50">apartment</span>
         </div>
       </div>
 

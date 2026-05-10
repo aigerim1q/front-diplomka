@@ -7,6 +7,10 @@ export interface Resident {
   firstName?: string
   lastName?: string
   phoneNumber?: string
+  apartmentNumber: string
+  building: string
+  entrance: string
+  floor: number
   status: UserStatus
   mustChangePassword: boolean
   lastLoginAt?: string
@@ -18,6 +22,10 @@ export interface CreateResidentRequest {
   firstName: string
   lastName: string
   phoneNumber?: string
+  apartmentNumber: string
+  building: string
+  entrance: string
+  floor: number
 }
 
 export interface CreateResidentResponse {
@@ -31,6 +39,10 @@ export interface UpdateResidentRequest {
   firstName: string
   lastName: string
   phoneNumber?: string
+  apartmentNumber: string
+  building: string
+  entrance: string
+  floor: number
 }
 
 export interface ResidentsQuery {

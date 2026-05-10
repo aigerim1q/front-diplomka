@@ -41,6 +41,7 @@ export default {
     tenants: 'Организации',
     complexes: 'Жилые комплексы',
     residents: 'Жильцы',
+    workers: 'Работники',
     requests: 'Заявки',
     announcements: 'Объявления',
     polls: 'Опросы',
@@ -129,5 +130,53 @@ export default {
     block: 'Заблокировать',
     unblock: 'Разблокировать',
     resetPassword: 'Сбросить пароль',
+  },
+  workers: {
+    title: 'Работники',
+    addWorker: 'Добавить работника',
+    fullName: 'ФИО',
+    phone: 'Телефон',
+    specialization: 'Специализация',
+    specializations: {
+      plumbing: 'Сантехника',
+      electrical: 'Электрика',
+      cleaning: 'Уборка',
+      carpentry: 'Плотницкие работы',
+      locksmith: 'Слесарные работы',
+      other: 'Прочее',
+    },
+  },
+  requests: {
+    title: 'Заявки',
+    statuses: {
+      new: 'Новая',
+      inProgress: 'В работе',
+      completed: 'Завершена',
+      cancelled: 'Отменена',
+    },
+  },
+  polls: {
+    title: 'Опросы',
+    createPoll: 'Создать опрос',
+    statuses: {
+      draft: 'Черновик',
+      active: 'Активно',
+      closed: 'Завершено',
+    },
+  },
+  announcements: {
+    title: 'Объявления',
+    createAnnouncement: 'Создать объявление',
+    statuses: {
+      draft: 'Черновик',
+      published: 'Опубликовано',
+      archived: 'В архиве',
+    },
+    categories: {
+      general: 'Общее',
+      maintenance: 'Обслуживание',
+      announcement: 'Объявление',
+      emergency: 'Срочное',
+    },
   },
 }

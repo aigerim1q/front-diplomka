@@ -4,7 +4,6 @@ import { z } from 'zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Modal from '@/components/shared/Modal'
 import { complexesApi } from '@/api/complexes'
-import { tenantsApi } from '@/api/tenants'
 import { Complex } from '@/types'
 
 const schema = z.object({
@@ -22,9 +21,9 @@ interface LinkKskModalProps {
 const LinkKskModal = ({ isOpen, onClose, complex }: LinkKskModalProps) => {
   const queryClient = useQueryClient()
 
-  const { data: tenantsData } = useQuery({
-    queryKey: ['tenants-ksk'],
-    queryFn: () => tenantsApi.getAll({ type: 2 }), // type 2 = KSK
+  const { data: kskData } = useQuery({
+    queryKey: ['available-ksk'],
+    queryFn: () => complexesApi.getAvailableKsk(),
     enabled: isOpen,
   })
 
@@ -43,7 +42,7 @@ const LinkKskModal = ({ isOpen, onClose, complex }: LinkKskModalProps) => {
 
   const handleClose = () => { reset(); onClose() }
 
-  const kskList = tenantsData?.data.items ?? []
+  const kskList = kskData?.data ?? []
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Привязать КСК">
@@ -75,8 +74,8 @@ const LinkKskModal = ({ isOpen, onClose, complex }: LinkKskModalProps) => {
             }`}
           >
             <option value="">— Выберите КСК —</option>
-            {kskList.map((t) => (
-              <option key={t.id} value={t.id}>{t.name}</option>
+            {kskList.map((ksk) => (
+              <option key={ksk.id} value={ksk.id}>{ksk.name}</option>
             ))}
           </select>
           {errors.kskTenantId && <p className="mt-1 text-xs text-red-500">{errors.kskTenantId.message}</p>}
