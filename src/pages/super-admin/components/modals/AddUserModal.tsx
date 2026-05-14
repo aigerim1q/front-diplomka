@@ -21,7 +21,6 @@ type AddUserForm = z.infer<typeof schema>
 interface AddUserModalProps {
   isOpen: boolean
   onClose: () => void
-  onSuccess: (password: string, email: string) => void
 }
 
 const ROLES = [
@@ -35,7 +34,7 @@ const inputClass = (error?: boolean) =>
     error ? 'border-red-400' : 'border-slate-200'
   }`
 
-const AddUserModal = ({ isOpen, onClose, onSuccess }: AddUserModalProps) => {
+const AddUserModal = ({ isOpen, onClose }: AddUserModalProps) => {
   const queryClient = useQueryClient()
   const [createdUser, setCreatedUser] = useState<{ email: string; password: string } | null>(null)
   const [copied, setCopied] = useState(false)
