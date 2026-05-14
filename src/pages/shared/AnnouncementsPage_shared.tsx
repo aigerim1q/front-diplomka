@@ -154,10 +154,12 @@ const AnnouncementsPage = () => {
       )}
 
       {/* Модалки */}
-      <NewsFormModal
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-      />
+      {isCreateOpen && (
+        <NewsFormModal
+          isOpen={isCreateOpen}
+          onClose={() => setIsCreateOpen(false)}
+        />
+      )}
 
       <NewsDetailModal
         isOpen={!!selectedNewsId}

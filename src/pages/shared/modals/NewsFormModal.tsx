@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import axios from 'axios'
 import Modal from '@/components/shared/Modal'
 import { newsApi } from '@/api/news'
-import { NewsDetail, NEWS_CATEGORY_OPTIONS } from '@/types'
+import { NewsDetail, NEWS_CATEGORY_OPTIONS, NewsCategory } from '@/types'
 
 const schema = z.object({
   title: z.string().min(1, 'Обязательное поле').max(300, 'Максимум 300 символов'),
   content: z.string().min(1, 'Обязательное поле'),
-  category: z.coerce.number().refine((v) => [1, 2, 3, 4].includes(v), { message: 'Выберите категорию' }),
+  category: z.string().refine((v) => ['1', '2', '3', '4'].includes(v), { message: 'Выберите категорию' }),
   publishDate: z.string().min(1, 'Обязательное поле'),
   expirationDate: z.string().optional(),
   isPinned: z.boolean(),
@@ -30,41 +31,38 @@ const inputClass = (error?: boolean) =>
     error ? 'border-red-400' : 'border-slate-200'
   }`
 
+const getErrorMessage = (err: unknown, fallback: string): string => {
+  if (axios.isAxiosError(err)) {
+    return err.response?.data?.message ?? err.response?.data?.errorCode ?? fallback
+  }
+  return fallback
+}
+
 const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
   const queryClient = useQueryClient()
   const isEdit = !!news
   const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(news?.imageUrl ?? null)
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<NewsForm>({
     resolver: zodResolver(schema),
-    defaultValues: { isPinned: false, category: 1 },
+    defaultValues: news
+      ? {
+          title: news.title,
+          content: news.content,
+          category: String(news.category),
+          publishDate: news.publishDate.slice(0, 16),
+          expirationDate: news.expirationDate ? news.expirationDate.slice(0, 16) : '',
+          isPinned: news.isPinned,
+        }
+      : { isPinned: false, category: '1' },
   })
-
-  useEffect(() => {
-    if (news) {
-      reset({
-        title: news.title,
-        content: news.content,
-        category: news.category,
-        publishDate: news.publishDate.slice(0, 16),
-        expirationDate: news.expirationDate ? news.expirationDate.slice(0, 16) : '',
-        isPinned: news.isPinned,
-      })
-      setImagePreview((news as any).imageUrl ?? null)
-      setImageFile(null)
-    } else {
-      reset({ isPinned: false, category: 1 })
-      setImagePreview(null)
-      setImageFile(null)
-    }
-  }, [news, reset])
 
   const { mutate: createNews, isPending: isCreating, error: createError } = useMutation({
     mutationFn: (data: NewsForm) => newsApi.create({
       title: data.title,
       content: data.content,
-      category: data.category as any,
+      category: Number(data.category) as NewsCategory,
       publishDate: new Date(data.publishDate).toISOString(),
       expirationDate: data.expirationDate ? new Date(data.expirationDate).toISOString() : undefined,
       isPinned: data.isPinned,
@@ -74,9 +72,8 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
       toast.success('Объявление создано')
       handleClose()
     },
-    onError: (err: any) => {
-      const msg = err?.response?.data?.message || err?.response?.data?.errorCode || 'Ошибка при создании'
-      toast.error(msg)
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, 'Ошибка при создании'))
     },
   })
 
@@ -84,7 +81,7 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
     mutationFn: (data: NewsForm) => newsApi.update(news!.id, {
       title: data.title,
       content: data.content,
-      category: data.category as any,
+      category: Number(data.category) as NewsCategory,
       publishDate: new Date(data.publishDate).toISOString(),
       expirationDate: data.expirationDate ? new Date(data.expirationDate).toISOString() : undefined,
       isPinned: data.isPinned,
@@ -95,9 +92,8 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
       toast.success('Объявление обновлено')
       handleClose()
     },
-    onError: (err: any) => {
-      const msg = err?.response?.data?.message || err?.response?.data?.errorCode || 'Ошибка при обновлении'
-      toast.error(msg)
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, 'Ошибка при обновлении'))
     },
   })
 
@@ -114,7 +110,7 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
   }
 
   const handleClose = () => {
-    reset({ isPinned: false, category: 1 })
+    reset({ isPinned: false, category: '1' })
     setImageFile(null)
     setImagePreview(null)
     onClose()
@@ -129,15 +125,18 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
   }
 
   const isPending = isCreating || isUpdating
+  const errorMessage = createError
+    ? getErrorMessage(createError, 'Ошибка при сохранении. Проверьте данные.')
+    : updateError
+      ? getErrorMessage(updateError, 'Ошибка при сохранении. Проверьте данные.')
+      : null
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={isEdit ? 'Редактировать объявление' : 'Создать объявление'}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {(createError || updateError) && (
+        {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-3 py-2 rounded-lg">
-            {(createError as any)?.response?.data?.message ||
-             (updateError as any)?.response?.data?.message ||
-             'Ошибка при сохранении. Проверьте данные.'}
+            {errorMessage}
           </div>
         )}
 

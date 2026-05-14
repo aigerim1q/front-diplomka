@@ -71,6 +71,7 @@ export interface NewsDetail {
   expirationDate: string | null
   createdAt: string
   attachments: NewsAttachment[]
+  imageUrl?: string | null
 }
 
 export interface CreateNewsRequest {

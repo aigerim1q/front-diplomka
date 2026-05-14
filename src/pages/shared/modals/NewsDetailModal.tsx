@@ -154,11 +154,14 @@ const NewsDetailModal = ({ isOpen, onClose, newsId }: NewsDetailModalProps) => {
       </Modal>
 
       {/* Модалка редактирования */}
-      <NewsFormModal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        news={news}
-      />
+      {isEditOpen && news && (
+        <NewsFormModal
+          key={news.id}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          news={news}
+        />
+      )}
     </>
   )
 }
