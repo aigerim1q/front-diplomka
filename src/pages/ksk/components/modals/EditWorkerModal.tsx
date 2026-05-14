@@ -6,13 +6,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import Modal from '@/components/shared/Modal'
 import { kskWorkersApi } from '@/api/kskWorkers'
-import { Worker, SPECIALIZATION_OPTIONS } from '@/types'
+import { Worker, SPECIALIZATION_OPTIONS, WorkerSpecialization } from '@/types'
 
 const schema = z.object({
-  fullName: z.string().min(2, 'Минимум 2 символа').max(200, 'Максимум 200 символов'),
+  firstName: z.string().min(1, 'Обязательное поле').max(100, 'Максимум 100 символов'),
+  lastName: z.string().min(1, 'Обязательное поле').max(100, 'Максимум 100 символов'),
   phoneNumber: z.string().min(1, 'Обязательное поле').max(50, 'Максимум 50 символов'),
-  specialization: z.coerce.number().refine(
-    (v) => [1, 2, 3, 4, 5, 99].includes(v),
+  specialization: z.string().refine(
+    (v) => ['1', '2', '3', '4', '5', '99'].includes(v),
     { message: 'Выберите специализацию' }
   ),
 })
@@ -30,6 +31,13 @@ const inputClass = (error?: boolean) =>
     error ? 'border-red-400' : 'border-slate-200'
   }`
 
+const splitFullName = (fullName: string) => {
+  const parts = fullName.trim().split(/\s+/)
+  if (parts.length === 0) return { firstName: '', lastName: '' }
+  if (parts.length === 1) return { firstName: parts[0], lastName: '' }
+  return { firstName: parts[0], lastName: parts.slice(1).join(' ') }
+}
+
 const EditWorkerModal = ({ isOpen, onClose, worker }: EditWorkerModalProps) => {
   const queryClient = useQueryClient()
 
@@ -39,19 +47,22 @@ const EditWorkerModal = ({ isOpen, onClose, worker }: EditWorkerModalProps) => {
 
   useEffect(() => {
     if (worker) {
+      const { firstName, lastName } = splitFullName(worker.fullName)
       reset({
-        fullName: worker.fullName,
+        firstName,
+        lastName,
         phoneNumber: worker.phoneNumber,
-        specialization: worker.specialization,
+        specialization: String(worker.specialization),
       })
     }
   }, [worker, reset])
 
   const { mutate, isPending, error: serverError } = useMutation({
     mutationFn: (data: EditWorkerForm) => kskWorkersApi.update(worker!.id, {
-      fullName: data.fullName,
+      firstName: data.firstName,
+      lastName: data.lastName,
       phoneNumber: data.phoneNumber,
-      specialization: data.specialization as any,
+      specialization: Number(data.specialization) as WorkerSpecialization,
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ksk-workers'] })
@@ -74,13 +85,17 @@ const EditWorkerModal = ({ isOpen, onClose, worker }: EditWorkerModalProps) => {
           </div>
         )}
 
-        <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">ФИО</label>
-          <input
-            {...register('fullName')}
-            className={inputClass(!!errors.fullName)}
-          />
-          {errors.fullName && <p className="mt-1 text-xs text-red-500">{errors.fullName.message}</p>}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Имя</label>
+            <input {...register('firstName')} className={inputClass(!!errors.firstName)} />
+            {errors.firstName && <p className="mt-1 text-xs text-red-500">{errors.firstName.message}</p>}
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Фамилия</label>
+            <input {...register('lastName')} className={inputClass(!!errors.lastName)} />
+            {errors.lastName && <p className="mt-1 text-xs text-red-500">{errors.lastName.message}</p>}
+          </div>
         </div>
 
         <div>

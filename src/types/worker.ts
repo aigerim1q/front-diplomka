@@ -18,24 +18,39 @@ export const SPECIALIZATION_OPTIONS: { value: WorkerSpecialization; label: strin
   { value: 99, label: 'Прочее' },
 ]
 
+// 1 = Available (свободен), 2 = Busy (занят)
+export type WorkerAvailabilityStatus = 1 | 2
+
 export interface Worker {
   id: string
+  userId: string
   fullName: string
   phoneNumber: string
   specialization: WorkerSpecialization
   specializationName: string
   isActive: boolean
   createdAt: string
+  status: WorkerAvailabilityStatus
+  availableInMinutes: number | null
+  availabilityComment: string | null
+  availabilityLabel: string
 }
 
 export interface CreateWorkerRequest {
-  fullName: string
+  email: string
+  firstName: string
+  lastName: string
   phoneNumber: string
   specialization: WorkerSpecialization
 }
 
+export interface CreateWorkerResponse {
+  workerId: string
+}
+
 export interface UpdateWorkerRequest {
-  fullName: string
+  firstName: string
+  lastName: string
   phoneNumber: string
   specialization: WorkerSpecialization
 }
