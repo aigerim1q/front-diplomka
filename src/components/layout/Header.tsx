@@ -16,6 +16,8 @@ const Header = () => {
     '/construction-polls': t('polls.createPoll'),
     '/announcements': t('announcements.createAnnouncement'),
     '/construction-announcements': t('announcements.createAnnouncement'),
+    '/services': t('services.add'),
+    '/contacts': t('contacts.add'),
   }
 
   const PAGE_TITLES: Record<string, string> = {
@@ -32,6 +34,10 @@ const Header = () => {
     '/requests': t('nav.requests'),
     '/announcements': t('nav.announcements'),
     '/polls': t('nav.polls'),
+    '/services': t('services.title'),
+    '/classifieds': t('classifieds.title'),
+    '/chat-lounge': t('chatLounge.title'),
+    '/contacts': t('contacts.title'),
   }
   const title = PAGE_TITLES[location.pathname] ?? 'MyHome'
   const addLabel = ADD_BUTTONS[location.pathname]

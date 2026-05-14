@@ -140,11 +140,14 @@ const ComplexesPage = () => {
       {/* Модалки */}
       <AddComplexModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} />
 
-      <EditComplexModal
-        isOpen={!!editComplex}
-        onClose={() => setEditComplex(null)}
-        complex={editComplex}
-      />
+      {editComplex && (
+        <EditComplexModal
+          key={editComplex.id}
+          isOpen={!!editComplex}
+          onClose={() => setEditComplex(null)}
+          complex={editComplex}
+        />
+      )}
 
       <LinkKskModal
         isOpen={!!linkKskComplex}

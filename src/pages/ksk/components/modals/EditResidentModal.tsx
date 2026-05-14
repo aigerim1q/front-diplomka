@@ -20,10 +20,12 @@ const schema = z.object({
   apartmentNumber: z.string().min(1, 'Обязательное поле'),
   building: z.string().min(1, 'Обязательное поле'),
   entrance: z.string().min(1, 'Обязательное поле'),
-  floor: z.preprocess(
-    (v) => (v === '' || v === undefined || v === null ? undefined : Number(v)),
-    z.number({ required_error: 'Обязательное поле', invalid_type_error: 'Введите число' }).int().positive('Должно быть положительным числом')
-  ),
+  floor: z
+    .string()
+    .min(1, 'Обязательное поле')
+    .refine((v) => /^\d+$/.test(v) && Number(v) > 0, {
+      message: 'Должно быть положительным числом',
+    }),
 })
 
 type EditResidentForm = z.infer<typeof schema>
@@ -100,7 +102,7 @@ const EditResidentModal = ({ isOpen, onClose, resident }: EditResidentModalProps
         apartmentNumber: resident.apartmentNumber ?? '',
         building: resident.building ?? '',
         entrance: resident.entrance ?? '',
-        floor: resident.floor ?? undefined,
+        floor: resident.floor !== null && resident.floor !== undefined ? String(resident.floor) : '',
       })
     }
   }, [resident, reset])
@@ -113,7 +115,7 @@ const EditResidentModal = ({ isOpen, onClose, resident }: EditResidentModalProps
       apartmentNumber: data.apartmentNumber,
       building: data.building,
       entrance: data.entrance,
-      floor: data.floor,
+      floor: Number(data.floor),
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ksk-residents'] })

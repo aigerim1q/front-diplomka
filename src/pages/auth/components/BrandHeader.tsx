@@ -1,7 +1,4 @@
-import { useTranslation } from 'react-i18next'
-
 const BrandHeader = () => {
-  const { t } = useTranslation()
   return (
     <div className="text-center mb-8">
       <div className="inline-flex items-center justify-center w-16 h-16 bg-[#2563EB] rounded-2xl shadow-lg mb-4">

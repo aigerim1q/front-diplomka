@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
+import axios from 'axios'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/store/authStore'
 import BrandHeader from './components/BrandHeader'
@@ -64,8 +65,8 @@ const ChangePasswordPage = () => {
       }
       clearAuth()
       navigate('/login', { replace: true })
-    } catch (err: any) {
-      const code = err?.response?.data?.code
+    } catch (err) {
+      const code = axios.isAxiosError(err) ? err.response?.data?.code : undefined
       if (code === 'AUTH_INVALID_CREDENTIALS') {
         setServerError('Текущий пароль введён неверно')
       } else {
