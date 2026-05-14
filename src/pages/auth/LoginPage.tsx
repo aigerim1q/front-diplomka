@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 import { useAuthStore } from '@/store/authStore'
 import { authApi } from '@/api/auth'
 import { AuthUser, UserRole } from '@/types'
@@ -67,8 +68,8 @@ const LoginPage = () => {
       }
 
       navigate(ROLE_ROUTES[user.role] ?? '/login', { replace: true })
-    } catch (err: any) {
-      const code = err?.response?.data?.code
+    } catch (err) {
+      const code = axios.isAxiosError(err) ? err.response?.data?.code : undefined
       if (code === 'AUTH_INVALID_CREDENTIALS') {
         setServerError('Неверный email или пароль')
       } else {

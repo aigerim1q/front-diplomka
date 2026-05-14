@@ -20,10 +20,12 @@ const schema = z.object({
   apartmentNumber: z.string().min(1, 'Обязательное поле'),
   building: z.string().min(1, 'Обязательное поле'),
   entrance: z.string().min(1, 'Обязательное поле'),
-  floor: z.preprocess(
-    (v) => (v === '' || v === undefined || v === null ? undefined : Number(v)),
-    z.number({ required_error: 'Обязательное поле', invalid_type_error: 'Введите число' }).int().positive('Должно быть положительным числом')
-  ),
+  floor: z
+    .string()
+    .min(1, 'Обязательное поле')
+    .refine((v) => /^\d+$/.test(v) && Number(v) > 0, {
+      message: 'Должно быть положительным числом',
+    }),
 })
 
 type AddResidentForm = z.infer<typeof schema>
@@ -111,7 +113,7 @@ const AddResidentModal = ({ isOpen, onClose }: AddResidentModalProps) => {
       apartmentNumber: data.apartmentNumber,
       building: data.building,
       entrance: data.entrance,
-      floor: data.floor,
+      floor: Number(data.floor),
     })
   }
 

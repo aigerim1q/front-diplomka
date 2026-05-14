@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -31,25 +31,20 @@ const inputClass = (error?: boolean) =>
 const EditComplexModal = ({ isOpen, onClose, complex }: EditComplexModalProps) => {
   const queryClient = useQueryClient()
   const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(complex?.imageUrl ?? null)
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<EditComplexForm>({
     resolver: zodResolver(schema),
+    defaultValues: complex
+      ? {
+          name: complex.name,
+          address: complex.address,
+          city: complex.city,
+          region: complex.region,
+          description: complex.description ?? '',
+        }
+      : undefined,
   })
-
-  useEffect(() => {
-    if (complex) {
-      reset({
-        name: complex.name,
-        address: complex.address,
-        city: complex.city,
-        region: complex.region,
-        description: complex.description ?? '',
-      })
-      setImagePreview(complex.imageUrl ?? null)
-      setImageFile(null)
-    }
-  }, [complex, reset])
 
   const { mutate, isPending, error: serverError } = useMutation({
     mutationFn: (data: EditComplexForm) => complexesApi.update(complex!.id, data, imageFile),
