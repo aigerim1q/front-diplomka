@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
 import { usersApi } from '@/api/users'
 import { tenantsApi } from '@/api/tenants'
 import StatCard from '@/components/shared/StatCard'
@@ -41,8 +40,6 @@ const STAT_CARDS = [
 ]
 
 const DashboardPage = () => {
-  const navigate = useNavigate()
-
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ['users', 'dashboard'],
     queryFn: () => usersApi.getAll({ page: 1, pageSize: 5 }),

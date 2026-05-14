@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { usersApi } from '@/api/users'
-import { User } from '@/types'
+import { User, UserRole, UserStatus } from '@/types'
 import UsersTable from './components/UsersTable'
 import UsersFilters from './components/UsersFilters'
 import UsersPagination from './components/UsersPagination'
@@ -36,8 +36,8 @@ const UsersPage = () => {
       page,
       pageSize: PAGE_SIZE,
       // Если роль не выбрана — передаём undefined, но фильтруем жильцов (role=5) на фронте
-      role: role ? Number(role) as any : undefined,
-      status: status ? Number(status) as any : undefined,
+      role: role ? (Number(role) as UserRole) : undefined,
+      status: status ? (Number(status) as UserStatus) : undefined,
     }),
   })
 
@@ -129,7 +129,6 @@ const UsersPage = () => {
       <AddUserModal
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
-        onSuccess={() => {}}
       />
 
       <ConfirmActionModal

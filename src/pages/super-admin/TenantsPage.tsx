@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { tenantsApi } from '@/api/tenants'
+import { TenantType } from '@/types'
 import TenantsTable from './components/TenantsTable'
 import UsersPagination from './components/UsersPagination'
 import AddTenantModal from './components/modals/AddTenantModal'
@@ -22,7 +23,7 @@ const TenantsPage = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['tenants', page, type],
     queryFn: () => tenantsApi.getAll({
-      type: type ? Number(type) as any : undefined,
+      type: type ? (Number(type) as TenantType) : undefined,
     }),
   })
 
@@ -72,8 +73,8 @@ const TenantsPage = () => {
       <div className="grid grid-cols-3 gap-4">
         {[
           { label: 'Всего организаций', value: totalCount, icon: 'domain', color: 'text-primary bg-primary/10' },
-          { label: 'Строительных компаний', value: allTenants.filter(t => t.type === 1 || t.type as any === 'ConstructionCompany').length, icon: 'construction', color: 'text-purple-600 bg-purple-100' },
-          { label: 'КСК', value: allTenants.filter(t => t.type === 2 || t.type as any === 'KSK').length, icon: 'location_city', color: 'text-blue-600 bg-blue-100' },
+          { label: 'Строительных компаний', value: allTenants.filter(t => t.type === 1 || (t.type as unknown) === 'ConstructionCompany').length, icon: 'construction', color: 'text-purple-600 bg-purple-100' },
+          { label: 'КСК', value: allTenants.filter(t => t.type === 2 || (t.type as unknown) === 'KSK').length, icon: 'location_city', color: 'text-blue-600 bg-blue-100' },
         ].map((stat) => (
           <div key={stat.label} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex items-center gap-4">
             <div className={`p-3 rounded-lg ${stat.color}`}>
