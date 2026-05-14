@@ -109,7 +109,7 @@ const WorkersPage = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                {['Работник', 'Телефон', 'Специализация', 'Статус', 'Дата добавления', 'Действия'].map((col) => (
+                {['Работник', 'Телефон', 'Специализация', 'Статус занятости', 'Статус', 'Дата добавления', 'Действия'].map((col) => (
                   <th
                     key={col}
                     className={`px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider ${col === 'Действия' ? 'text-right' : ''}`}
@@ -122,6 +122,7 @@ const WorkersPage = () => {
             <tbody className="divide-y divide-slate-100">
               {workers.map((worker) => {
                 const isInactive = !worker.isActive
+                const isBusy = worker.status === 2
                 return (
                   <tr
                     key={worker.id}
@@ -152,7 +153,22 @@ const WorkersPage = () => {
                       </span>
                     </td>
 
-                    {/* Статус */}
+                    {/* Статус занятости */}
+                    <td className="px-6 py-4">
+                      <span
+                        title={worker.availabilityComment ?? undefined}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                          isBusy
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        }`}
+                      >
+                        <span className={`size-1.5 rounded-full ${isBusy ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                        {worker.availabilityLabel || (isBusy ? 'Занят' : 'Свободен')}
+                      </span>
+                    </td>
+
+                    {/* Статус (активен/деактивирован) */}
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${
                         isInactive
