@@ -30,6 +30,10 @@ const KSK_NAV: NavItem[] = [
   { labelKey: 'nav.workers', icon: 'engineering', to: '/workers' },
   { labelKey: 'nav.announcements', icon: 'campaign', to: '/announcements' },
   { labelKey: 'nav.polls', icon: 'poll', to: '/polls' },
+  { labelKey: 'nav.services', icon: 'home_repair_service', to: '/services' },
+  { labelKey: 'nav.classifieds', icon: 'storefront', to: '/classifieds' },
+  { labelKey: 'nav.chatLounge', icon: 'forum', to: '/chat-lounge' },
+  { labelKey: 'nav.contacts', icon: 'contacts', to: '/contacts' },
 ]
 
 const ROLE_NAV: Record<number, NavItem[]> = {

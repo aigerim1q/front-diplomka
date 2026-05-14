@@ -24,6 +24,10 @@ import WorkersPage from '@/pages/ksk/WorkersPage'
 import RequestsPage from '@/pages/ksk/RequestsPage'
 import AnnouncementsPage from '@/pages/ksk/AnnouncementsPage_ksk'
 import PollsPage from '@/pages/ksk/PollsPage'
+import ServicesPage from '@/pages/ksk/ServicesPage'
+import ClassifiedsPage from '@/pages/ksk/ClassifiedsPage'
+import ChatLoungePage from '@/pages/ksk/ChatLoungePage'
+import ContactsPage from '@/pages/ksk/ContactsPage'
 
 // Layout
 import DashboardLayout from '@/components/layout/DashboardLayout'
@@ -85,6 +89,10 @@ export const router = createBrowserRouter([
           { path: '/requests', element: <RequestsPage /> },
           { path: '/announcements', element: <AnnouncementsPage /> },
           { path: '/polls', element: <PollsPage /> },
+          { path: '/services', element: <ServicesPage /> },
+          { path: '/classifieds', element: <ClassifiedsPage /> },
+          { path: '/chat-lounge', element: <ChatLoungePage /> },
+          { path: '/contacts', element: <ContactsPage /> },
         ],
       },
     ],
