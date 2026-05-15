@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import {
   HubConnection,
   HubConnectionBuilder,
@@ -6,6 +6,7 @@ import {
   LogLevel,
 } from '@microsoft/signalr'
 import { toast } from 'sonner'
+import axios from 'axios'
 import { kskChatApi } from '@/api/kskChat'
 import { useAuth } from '@/hooks/useAuth'
 import {
@@ -27,6 +28,8 @@ const ChatLoungePage = () => {
     HubConnectionState.Disconnected
   )
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [inputText, setInputText] = useState('')
+  const [isSending, setIsSending] = useState(false)
 
   const connectionRef = useRef<HubConnection | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -47,11 +50,15 @@ const ChatLoungePage = () => {
         const res = await kskChatApi.getLoungeHistory(kskId, 1, PAGE_SIZE)
         if (cancelled) return
         // API returns DESC, reverse for display oldest → newest
-        const sorted = [...res.data.items].reverse()
-        setMessages(sorted)
-      } catch {
+        const items = Array.isArray(res.data?.items) ? res.data.items : []
+        setMessages([...items].reverse())
+      } catch (err) {
         if (cancelled) return
-        toast.error('Не удалось загрузить историю чата')
+        const detail = axios.isAxiosError(err)
+          ? `${err.response?.status ?? ''} ${err.response?.data?.message ?? err.response?.data?.title ?? err.message}`
+          : 'unknown error'
+        console.error('[chat] loadHistory failed:', err)
+        toast.error(`История чата не загрузилась: ${detail}`)
       } finally {
         if (!cancelled) setIsLoading(false)
       }
@@ -137,6 +144,36 @@ const ChatLoungePage = () => {
     }
   }
 
+  const handleSend = async () => {
+    const text = inputText.trim()
+    if (!text || !kskId || isSending) return
+    setIsSending(true)
+    try {
+      const res = await kskChatApi.sendLoungeMessage(kskId, text)
+      const created = res.data
+      if (created?.id) {
+        setMessages((prev) =>
+          prev.some((m) => m.id === created.id) ? prev : [...prev, created]
+        )
+      }
+      setInputText('')
+    } catch (err) {
+      const detail = axios.isAxiosError(err)
+        ? `${err.response?.status ?? ''} ${err.response?.data?.message ?? err.response?.data?.title ?? err.message}`
+        : 'unknown error'
+      toast.error(`Не удалось отправить сообщение: ${detail}`)
+    } finally {
+      setIsSending(false)
+    }
+  }
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
+
   const formatTime = (iso: string) => {
     const d = new Date(iso)
     return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
@@ -186,7 +223,7 @@ const ChatLoungePage = () => {
         </div>
         <div className="flex-1">
           <h3 className="font-bold text-slate-900">Чат ЖК</h3>
-          <p className="text-xs text-slate-500">Общий чат жильцов · режим модератора</p>
+          <p className="text-xs text-slate-500">Общий чат жильцов</p>
         </div>
         <div className="flex items-center gap-2 text-xs text-slate-500">
           <span className={`size-2 rounded-full ${conn.color}`} />
@@ -275,10 +312,27 @@ const ChatLoungePage = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Footer note */}
-      <div className="px-6 py-3 border-t border-slate-100 bg-slate-50/50 text-xs text-slate-500 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[16px]">info</span>
-        В режиме модератора отправка сообщений отключена. Доступно только удаление нарушающих сообщений.
+      {/* Composer */}
+      <div className="px-4 py-3 border-t border-slate-100 bg-white">
+        <div className="flex items-end gap-2">
+          <textarea
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Напишите сообщение..."
+            rows={1}
+            className="flex-1 resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary max-h-32"
+          />
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={!inputText.trim() || isSending}
+            className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+          >
+            <span className="material-symbols-outlined text-[18px]">send</span>
+            {isSending ? 'Отправка...' : 'Отправить'}
+          </button>
+        </div>
       </div>
     </div>
   )

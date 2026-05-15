@@ -7,6 +7,13 @@ export const kskChatApi = {
       params: { page, pageSize },
     }),
 
+  sendLoungeMessage: (kskId: string, text: string) =>
+    api.post<ChatMessageDto>(`/api/chat/messages`, {
+      kskId,
+      text,
+      threadType: 2, // Lounge
+    }),
+
   deleteMessage: (id: string) =>
     api.delete(`/api/chat/messages/${id}`),
 
