@@ -85,28 +85,20 @@ const ChatPreviewCard = () => {
       ) : (
         <ul className="divide-y divide-slate-100">
           {messages.map((m) => {
-            const initial = (m.senderFullName || m.senderName || '?')[0]?.toUpperCase() ?? '?'
+            const initial = m.authorName?.[0]?.toUpperCase() ?? '?'
             return (
               <li
                 key={m.id}
                 onClick={() => navigate('/chat-lounge')}
                 className="px-5 py-3 flex items-start gap-3 hover:bg-slate-50 transition-colors cursor-pointer"
               >
-                {m.senderAvatarUrl ? (
-                  <img
-                    src={m.senderAvatarUrl}
-                    alt=""
-                    className="size-9 rounded-full object-cover shrink-0"
-                  />
-                ) : (
-                  <div className="size-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
-                    {initial}
-                  </div>
-                )}
+                <div className="size-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
+                  {initial}
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2">
                     <span className="text-sm font-semibold text-slate-900 truncate">
-                      {m.senderFullName || m.senderName}
+                      {m.authorName}
                     </span>
                     <span className="text-[11px] text-slate-400 ml-auto shrink-0">
                       {formatRelative(m.createdAt)}

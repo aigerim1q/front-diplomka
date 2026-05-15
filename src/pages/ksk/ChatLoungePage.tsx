@@ -30,6 +30,7 @@ const ChatLoungePage = () => {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [inputText, setInputText] = useState('')
   const [isSending, setIsSending] = useState(false)
+  const [threadId, setThreadId] = useState<string | null>(null)
 
   const connectionRef = useRef<HubConnection | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -45,7 +46,20 @@ const ChatLoungePage = () => {
 
     let cancelled = false
 
-    const loadHistory = async () => {
+    const init = async () => {
+      try {
+        const initRes = await kskChatApi.initLounge()
+        if (cancelled) return
+        setThreadId(initRes.data.threadId)
+      } catch (err) {
+        if (cancelled) return
+        const detail = axios.isAxiosError(err)
+          ? `${err.response?.status ?? ''} ${err.response?.data?.message ?? err.response?.data?.title ?? err.message}`
+          : 'unknown error'
+        console.error('[chat] initLounge failed:', err)
+        toast.error(`Лаунж-чат не инициализирован: ${detail}`)
+      }
+
       try {
         const res = await kskChatApi.getLoungeHistory(kskId, 1, PAGE_SIZE)
         if (cancelled) return
@@ -119,7 +133,7 @@ const ChatLoungePage = () => {
       }
     }
 
-    loadHistory()
+    init()
     connect()
 
     return () => {
@@ -146,10 +160,10 @@ const ChatLoungePage = () => {
 
   const handleSend = async () => {
     const text = inputText.trim()
-    if (!text || !kskId || isSending) return
+    if (!text || !threadId || isSending) return
     setIsSending(true)
     try {
-      const res = await kskChatApi.sendLoungeMessage(kskId, text)
+      const res = await kskChatApi.sendMessage(threadId, text)
       const created = res.data
       if (created?.id) {
         setMessages((prev) =>
@@ -252,25 +266,14 @@ const ChatLoungePage = () => {
               </div>
               {group.items.map((msg) => (
                 <div key={msg.id} className="flex items-start gap-3 group">
-                  {msg.senderAvatarUrl ? (
-                    <img
-                      src={msg.senderAvatarUrl}
-                      alt=""
-                      className="size-9 rounded-full object-cover flex-shrink-0"
-                    />
-                  ) : (
-                    <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
-                      {(msg.senderFullName || msg.senderName)[0]?.toUpperCase() ?? '?'}
-                    </div>
-                  )}
+                  <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
+                    {msg.authorName?.[0]?.toUpperCase() ?? '?'}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2 flex-wrap">
                       <span className="text-sm font-semibold text-slate-900">
-                        {msg.senderFullName || msg.senderName}
+                        {msg.authorName}
                       </span>
-                      {msg.senderApartmentNumber && (
-                        <span className="text-xs text-slate-500">кв. {msg.senderApartmentNumber}</span>
-                      )}
                       <span className="text-xs text-slate-400">{formatTime(msg.createdAt)}</span>
                       {msg.editedAt && (
                         <span className="text-xs text-slate-400 italic">(изменено)</span>
@@ -326,7 +329,7 @@ const ChatLoungePage = () => {
           <button
             type="button"
             onClick={handleSend}
-            disabled={!inputText.trim() || isSending}
+            disabled={!inputText.trim() || isSending || !threadId}
             className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
           >
             <span className="material-symbols-outlined text-[18px]">send</span>

@@ -1,35 +1,21 @@
-export type ChatThreadType = 1 | 2 // 1 = Direct, 2 = Lounge
-
 export interface ChatMessageDto {
   id: string
-  kskId: string
-  senderId: string
-  senderName: string
-  senderFullName: string
-  senderApartmentNumber: string | null
-  senderAvatarUrl: string | null
+  threadId: string
+  authorId: string
+  authorName: string
   text: string
-  threadId: string | null
-  threadType: number
-  contextAdId: string | null
+  isDeleted: boolean
   createdAt: string
   editedAt: string | null
-  isDeleted: boolean
 }
 
 export interface ChatThreadDto {
-  threadId: string
-  type: number
-  title: string | null
-  lastMessageAt: string | null
+  id: string
+  type: 'Lounge' | 'Direct'
+  name: string
+  participantCount: number
   unreadCount: number
-  participants: ThreadParticipantDto[]
-}
-
-export interface ThreadParticipantDto {
-  userId: string
-  fullName: string
-  avatarUrl: string | null
+  lastMessageAt: string | null
 }
 
 export interface ChatMessageDeletedEvent {
