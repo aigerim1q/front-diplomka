@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '@/components/shared/LanguageSwitcher'
+import NotificationsBell from '@/components/shared/NotificationsBell'
 
 const Header = () => {
   const location = useLocation()
@@ -56,10 +57,7 @@ const Header = () => {
             type="text"
           />
         </div>
-        <button className="relative p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
-          <span className="material-symbols-outlined">notifications</span>
-          <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white" />
-        </button>
+        <NotificationsBell />
         <LanguageSwitcher />
         {addLabel && (
           <button
