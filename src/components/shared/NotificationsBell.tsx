@@ -206,7 +206,7 @@ const NotificationsBell = () => {
       if (m.isDeleted) continue
       const ts = new Date(m.createdAt).getTime()
       if (ts < cutoff) continue
-      const sender = m.senderFullName || m.senderName || '—'
+      const sender = m.authorName || '—'
       out.push({
         id: `chat-${m.id}`,
         icon: 'chat',
