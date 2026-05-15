@@ -7,6 +7,15 @@ import { Toaster } from 'sonner'
 import { router } from '@/router'
 import './index.css'
 
+// Drop legacy theme state if it leaked into localStorage from a previous build
+try {
+  localStorage.removeItem('theme-storage')
+  document.documentElement.classList.remove('dark')
+  document.documentElement.style.colorScheme = ''
+} catch {
+  /* ignore */
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
