@@ -15,7 +15,7 @@ import {
   ChatMessageEditedEvent,
 } from '@/types'
 
-const HUB_URL = '/hubs/chat'
+const HUB_URL = `${import.meta.env.VITE_API_BASE_URL ?? ''}/hubs/chat`
 const PAGE_SIZE = 50
 
 const ChatLoungePage = () => {
