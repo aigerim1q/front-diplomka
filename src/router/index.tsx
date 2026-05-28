@@ -28,6 +28,7 @@ import ServicesPage from '@/pages/ksk/ServicesPage'
 import ClassifiedsPage from '@/pages/ksk/ClassifiedsPage'
 import ChatLoungePage from '@/pages/ksk/ChatLoungePage'
 import ContactsPage from '@/pages/ksk/ContactsPage'
+import ReportsPage from '@/pages/ksk/ReportsPage'
 
 // Layout
 import DashboardLayout from '@/components/layout/DashboardLayout'
@@ -93,6 +94,7 @@ export const router = createBrowserRouter([
           { path: '/classifieds', element: <ClassifiedsPage /> },
           { path: '/chat-lounge', element: <ChatLoungePage /> },
           { path: '/contacts', element: <ContactsPage /> },
+          { path: '/reports', element: <ReportsPage /> },
         ],
       },
     ],
