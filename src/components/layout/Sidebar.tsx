@@ -34,6 +34,7 @@ const KSK_NAV: NavItem[] = [
   { labelKey: 'nav.classifieds', icon: 'storefront', to: '/classifieds' },
   { labelKey: 'nav.chatLounge', icon: 'forum', to: '/chat-lounge' },
   { labelKey: 'nav.contacts', icon: 'contacts', to: '/contacts' },
+  { labelKey: 'nav.reports', icon: 'folder_open', to: '/reports' },
 ]
 
 const ROLE_NAV: Record<number, NavItem[]> = {
