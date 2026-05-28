@@ -14,17 +14,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://housing-platform.onrender.com',
+        target: API_TARGET,
         changeOrigin: true,
         secure: false,
-        configure: (proxy) => {
-          proxy.on('error', (err) => console.log('[proxy error]', err))
-          proxy.on('proxyReq', (_, req) => console.log('[proxy req]', req.method, req.url))
-          proxy.on('proxyRes', (res) => console.log('[proxy res]', res.statusCode))
-        },
       },
       '/hubs': {
-        target: 'https://housing-platform.onrender.com',
+        target: API_TARGET,
         changeOrigin: true,
         secure: false,
         ws: true,
