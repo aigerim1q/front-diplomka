@@ -49,6 +49,7 @@ export default {
     classifieds: 'Маркетплейс',
     chatLounge: 'Чат ЖК',
     contacts: 'Контакты ЖК',
+    reports: 'Документы',
   },
   dashboard: {
     title: 'Обзор',
