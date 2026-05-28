@@ -49,6 +49,7 @@ export default {
     classifieds: 'Маркетплейс',
     chatLounge: 'ТҮК чаты',
     contacts: 'ТҮК байланыстары',
+    reports: 'Құжаттар',
   },
   dashboard: {
     title: 'Шолу',
