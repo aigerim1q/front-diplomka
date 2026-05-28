@@ -1,7 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-const API_TARGET = 'https://housingplatform-production.up.railway.app';
+
+const API_TARGET = 'https://housing-platform.onrender.com';
+
 export default defineConfig({
     plugins: [react()],
     resolve: {
@@ -14,12 +16,12 @@ export default defineConfig({
             '/api': {
                 target: API_TARGET,
                 changeOrigin: true,
-                secure: true,
+                secure: false,
             },
             '/hubs': {
                 target: API_TARGET,
                 changeOrigin: true,
-                secure: true,
+                secure: false,
                 ws: true,
             },
         },

@@ -14,9 +14,12 @@ export const reportsApi = {
     if (data.month) fd.append('Month', String(data.month))
     if (data.title) fd.append('Title', data.title)
     if (data.beginDate) fd.append('BeginDate', data.beginDate)
-    fd.append('File', data.file)
+    fd.append('File', data.file, data.file.name)
     return api.post<{ id: string }>('/api/ksk/reports', fd, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      transformRequest: (formData) => formData,
     })
   },
 
