@@ -1,3 +1,4 @@
+import { Edit2, Link2, Power, PowerOff, MapPin } from 'lucide-react'
 import { Complex } from '@/types'
 
 interface ComplexCardProps {
@@ -10,93 +11,106 @@ interface ComplexCardProps {
 
 const ComplexCard = ({ complex, onEdit, onLinkKsk, onActivate, onDeactivate }: ComplexCardProps) => {
   const isActive = complex.isActive
-  const hasKsk = !!complex.linkedKskTenantId
+  const hasKsk   = !!complex.linkedKskTenantId
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:border-primary/30 transition-all group">
-      {/* Превью изображения */}
-      <div className="aspect-video bg-gradient-to-br from-slate-200 to-slate-300 relative overflow-hidden">
+    <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden hover:shadow-lg hover:border-zinc-300 transition-all duration-200 flex flex-col">
+
+      {/* Image */}
+      <div className="relative h-44 overflow-hidden shrink-0">
         {complex.imageUrl ? (
           <img
             src={complex.imageUrl}
             alt={complex.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="material-symbols-outlined text-6xl text-slate-400/50">apartment</span>
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, #e4e8ed 0%, #cbd2db 100%)' }}
+          >
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#a1aab6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-        {/* Статус бейдж */}
-        <div className={`absolute top-3 right-3 text-white text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider ${
-          isActive ? 'bg-emerald-500' : 'bg-slate-400'
+
+        {/* Top-right: active status */}
+        <span className={`absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide shadow-sm ${
+          isActive ? 'bg-emerald-500 text-white' : 'bg-zinc-500 text-white'
         }`}>
           {isActive ? 'Активен' : 'Неактивен'}
-        </div>
+        </span>
       </div>
 
-      <div className="p-5">
-        {/* Название */}
-        <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-primary transition-colors">
-          {complex.name}
-        </h3>
+      {/* Body */}
+      <div className="flex flex-col flex-1 p-4 gap-3">
 
-        {/* Адрес */}
-        <div className="flex items-center gap-1.5 text-slate-500 text-sm mb-4">
-          <span className="material-symbols-outlined text-sm">location_on</span>
-          <span className="truncate">{complex.address}, {complex.city}</span>
-        </div>
-
-        {/* Регион + КСК статус */}
-        <div className="grid grid-cols-2 gap-3 mb-5">
-          <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-            <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mb-1">Регион</p>
-            <p className="text-sm font-bold text-primary truncate">{complex.region}</p>
-          </div>
-          <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-            <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mb-1">КСК</p>
-            <p className={`text-sm font-bold ${hasKsk ? 'text-emerald-600' : 'text-slate-400'}`}>
-              {hasKsk ? 'Привязан' : 'Не привязан'}
-            </p>
+        {/* Name + region */}
+        <div>
+          <h3 className="text-sm font-bold text-zinc-900 truncate leading-snug">{complex.name}</h3>
+          <div className="flex items-center gap-1 mt-1 text-zinc-400 text-xs">
+            <MapPin size={11} className="shrink-0" />
+            <span className="truncate">{complex.address}, {complex.city}</span>
           </div>
         </div>
 
-        {/* Кнопки действий */}
-        <div className="flex gap-2">
-          {/* Редактировать */}
+        {/* Meta row */}
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] text-zinc-400 bg-zinc-50 border border-zinc-100 px-2 py-0.5 rounded-md">
+            {complex.region}
+          </span>
+          <span className={`text-[11px] px-2 py-0.5 rounded-md border font-medium ${
+            hasKsk
+              ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+              : 'bg-zinc-50 text-zinc-400 border-zinc-100'
+          }`}>
+            {hasKsk ? 'КСК привязан' : 'Без КСК'}
+          </span>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-zinc-100" />
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
           <button
             onClick={() => onEdit(complex)}
-            className="flex-1 flex items-center justify-center gap-1.5 border border-slate-200 text-slate-700 py-2 rounded-lg text-sm font-bold hover:bg-slate-50 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 text-zinc-600 text-xs font-medium hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
           >
-            <span className="material-symbols-outlined text-sm">edit</span>
+            <Edit2 size={12} />
             Изменить
           </button>
 
-          {/* Привязать КСК */}
           <button
             onClick={() => onLinkKsk(complex)}
-            className="flex items-center justify-center gap-1.5 border border-primary/30 text-primary py-2 px-3 rounded-lg text-sm font-bold hover:bg-primary/5 transition-colors"
-            title="Привязать КСК"
+            title={hasKsk ? 'Изменить КСК' : 'Привязать КСК'}
+            className={`flex items-center justify-center size-[30px] rounded-lg border text-xs transition-colors ${
+              hasKsk
+                ? 'border-emerald-200 text-emerald-500 hover:bg-emerald-50'
+                : 'border-zinc-200 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-700'
+            }`}
           >
-            <span className="material-symbols-outlined text-sm">link</span>
+            <Link2 size={13} />
           </button>
 
-          {/* Активировать / Деактивировать */}
+          <div className="flex-1" />
+
           {isActive ? (
             <button
               onClick={() => onDeactivate(complex)}
-              className="flex-1 flex items-center justify-center gap-1.5 border border-red-100 text-red-600 py-2 rounded-lg text-sm font-bold hover:bg-red-50 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-100 text-red-500 text-xs font-medium hover:bg-red-50 transition-colors"
             >
-              <span className="material-symbols-outlined text-sm">block</span>
+              <PowerOff size={12} />
               Деактивировать
             </button>
           ) : (
             <button
               onClick={() => onActivate(complex)}
-              className="flex-1 flex items-center justify-center gap-1.5 border border-emerald-100 text-emerald-600 py-2 rounded-lg text-sm font-bold hover:bg-emerald-50 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-200 text-emerald-600 text-xs font-medium hover:bg-emerald-50 transition-colors"
             >
-              <span className="material-symbols-outlined text-sm">check_circle</span>
+              <Power size={12} />
               Активировать
             </button>
           )}

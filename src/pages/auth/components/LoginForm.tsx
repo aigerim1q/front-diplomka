@@ -29,8 +29,8 @@ const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
   })
 
   return (
-    <section className="bg-white py-10 px-8 shadow-xl rounded-2xl border border-gray-100">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <section className="bg-white py-8 px-8 rounded-2xl border border-zinc-200">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
         {serverError && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg">
@@ -40,7 +40,7 @@ const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
 
         {/* Email */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1" htmlFor="email">
+          <label className="block text-sm font-medium text-zinc-700 mb-1.5" htmlFor="email">
             {t('auth.email')}
           </label>
           <input
@@ -48,8 +48,8 @@ const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
             id="email"
             type="email"
             placeholder="admin@myhome.com"
-            className={`block w-full px-4 py-3 rounded-lg border shadow-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition ${
-              errors.email ? 'border-red-400' : 'border-gray-300'
+            className={`block w-full px-3.5 py-2.5 rounded-lg border text-zinc-900 placeholder:text-zinc-400 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 transition ${
+              errors.email ? 'border-red-400' : 'border-zinc-200 hover:border-zinc-300'
             }`}
           />
           {errors.email && (
@@ -59,11 +59,11 @@ const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
 
         {/* Пароль */}
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="block text-sm font-semibold text-gray-700" htmlFor="password">
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-sm font-medium text-zinc-700" htmlFor="password">
               {t('auth.password')}
             </label>
-            <a href="#" className="text-sm font-bold text-[#2563EB] hover:text-blue-700 transition">
+            <a href="#" className="text-sm font-medium text-zinc-900 hover:text-zinc-600 transition">
               {t('auth.forgotPassword')}
             </a>
           </div>
@@ -72,8 +72,8 @@ const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
             id="password"
             type="password"
             placeholder="••••••••"
-            className={`block w-full px-4 py-3 rounded-lg border shadow-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition ${
-              errors.password ? 'border-red-400' : 'border-gray-300'
+            className={`block w-full px-3.5 py-2.5 rounded-lg border text-zinc-900 placeholder:text-zinc-400 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 transition ${
+              errors.password ? 'border-red-400' : 'border-zinc-200 hover:border-zinc-300'
             }`}
           />
           {errors.password && (
@@ -83,14 +83,14 @@ const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
 
         {/* Remember me */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <input
               {...register('remember')}
               id="remember"
               type="checkbox"
-              className="h-4 w-4 text-[#2563EB] focus:ring-[#2563EB] border-gray-300 rounded cursor-pointer"
+              className="h-4 w-4 accent-zinc-900 border-zinc-300 rounded cursor-pointer"
             />
-            <label htmlFor="remember" className="ml-2 block text-sm text-gray-600 cursor-pointer">
+            <label htmlFor="remember" className="text-sm text-zinc-600 cursor-pointer">
               {t('auth.rememberDevice')}
             </label>
           </div>
@@ -101,7 +101,7 @@ const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full flex justify-center py-3.5 px-4 rounded-lg shadow-md text-base font-bold text-white bg-[#2563EB] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2563EB] transition disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full flex justify-center py-2.5 px-4 rounded-lg text-sm font-semibold text-white bg-zinc-900 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-900 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? t('auth.signingIn') : t('auth.signIn')}
         </button>

@@ -49,7 +49,7 @@ export default {
     classifieds: 'Маркетплейс',
     chatLounge: 'Чат ЖК',
     contacts: 'Контакты ЖК',
-    reports: 'Документы',
+    reports: 'Отчёты',
   },
   dashboard: {
     title: 'Обзор',
@@ -373,5 +373,59 @@ export default {
     newChatMessage: 'Новое сообщение в чате',
     daysLeft: 'осталось {{count}} дн',
     endsToday: 'завершается сегодня',
+  },
+
+  pages: {
+    residents: {
+      tabAll: 'Все', tabActive: 'Активные', tabBlocked: 'Заблокированные',
+      search: 'Поиск по имени или email...', addBtn: 'Добавить жильца',
+      count: 'жильцов', notFound: 'Жильцы не найдены',
+    },
+    workers: {
+      tabAll: 'Все', tabActive: 'Активные', tabInactive: 'Неактивные',
+      allSpecializations: 'Все специализации', search: 'Поиск по имени...',
+      addBtn: 'Добавить работника', notFound: 'Работники не найдены',
+      deactivate: 'Деактивировать',
+    },
+    requests: {
+      tabAll: 'Все', tabNew: 'Новые', tabInProgress: 'В работе',
+      tabCompleted: 'Завершены', tabCancelled: 'Отменены',
+      allCategories: 'Все категории', search: 'Поиск по заявкам...',
+      notFound: 'Заявки не найдены',
+    },
+    announcements: {
+      tabAll: 'Все', tabDrafts: 'Черновики', tabPublished: 'Опубликованные',
+      tabArchive: 'Архив', allCategories: 'Все категории',
+      createBtn: 'Создать объявление', notFound: 'Объявления не найдены',
+      resetFilter: 'Сбросить',
+    },
+    polls: {
+      tabAll: 'Все', tabDrafts: 'Черновики', tabActive: 'Активные',
+      tabCompleted: 'Завершённые', createBtn: 'Создать опрос',
+      notFound: 'Опросы не найдены', options: 'вар.',
+      today: 'Сегодня', daysLeft: 'дн. осталось', lastDay: 'последний день',
+    },
+    reports: {
+      title: 'Отчёты', upload: 'Загрузить отчёт',
+      allDocuments: 'Все документы', annual: 'Годовые',
+      notFound: 'Отчётов за {{year}} год нет',
+      uploadAnnual: 'Загрузить годовой отчёт',
+      year: 'Год', count: 'отчётов',
+      months: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+      monthsShort: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'],
+      file_1: 'файл', file_2: 'файла', file_5: 'файлов',
+      today: 'Заканчивается сегодня', lastDay: 'последний день',
+    },
+    contacts: {
+      addBtn: 'Добавить контакт', positions: 'Должности',
+      notFound: 'Контакты пока не добавлены', count: 'контактов',
+      positionsCount: 'должностей', systemTag: 'системная',
+      newPosition: 'Новая должность', existing: 'Существующие',
+    },
+    services: {
+      createBtn: 'Создать сервис', inactive: 'Неактивные',
+      notFound: 'Сервисы не найдены', count: 'сервисов',
+      search: 'Поиск по названию или провайдеру...',
+    },
   },
 }

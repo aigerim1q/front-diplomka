@@ -1,171 +1,170 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
+import { Plus, Pin, Paperclip, Calendar } from 'lucide-react'
 import { newsApi } from '@/api/news'
 import {
   NewsStatus,
   NEWS_STATUS_LABELS,
-  NEWS_STATUS_COLORS,
   NEWS_CATEGORY_LABELS,
-  NEWS_CATEGORY_COLORS,
   NEWS_CATEGORY_OPTIONS,
 } from '@/types'
 import NewsFormModal from './modals/NewsFormModal'
 import NewsDetailModal from './modals/NewsDetailModal'
 
-const TABS: { key: 'all' | NewsStatus; label: string }[] = [
-  { key: 'all', label: 'Все' },
-  { key: 1, label: 'Черновики' },
-  { key: 2, label: 'Опубликованные' },
-  { key: 3, label: 'Архив' },
-]
+const CAT_ACCENT: Record<number, string> = {
+  1: 'border-t-blue-400',
+  2: 'border-t-amber-400',
+  3: 'border-t-violet-400',
+  4: 'border-t-red-400',
+}
+const CAT_BG: Record<number, string> = {
+  1: 'bg-blue-50 text-blue-600',
+  2: 'bg-amber-50 text-amber-600',
+  3: 'bg-violet-50 text-violet-600',
+  4: 'bg-red-50 text-red-600',
+}
+const STATUS_STYLE: Record<number, string> = {
+  1: 'bg-zinc-100 text-zinc-400',
+  2: 'bg-emerald-50 text-emerald-600',
+  3: 'bg-zinc-100 text-zinc-300',
+}
 
 const AnnouncementsPage = () => {
-  const [tab, setTab] = useState<'all' | NewsStatus>('all')
-  const [categoryFilter, setCategoryFilter] = useState('')
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const { t } = useTranslation()
+  const TABS = [
+    { key: 'all' as const,  label: t('pages.announcements.tabAll') },
+    { key: 1 as NewsStatus, label: t('pages.announcements.tabDrafts') },
+    { key: 2 as NewsStatus, label: t('pages.announcements.tabPublished') },
+    { key: 3 as NewsStatus, label: t('pages.announcements.tabArchive') },
+  ]
+  const [tab, setTab]   = useState<'all' | NewsStatus>('all')
+  const [cat, setCat]   = useState('')
+  const [isCreateOpen, setIsCreateOpen]     = useState(false)
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null)
-
-  useEffect(() => {
-    const handler = () => setIsCreateOpen(true)
-    window.addEventListener('openAddModal', handler)
-    return () => window.removeEventListener('openAddModal', handler)
-  }, [])
 
   const { data, isLoading } = useQuery({
     queryKey: ['news-manage', tab],
-    queryFn: () =>
-      newsApi.getManage({
-        status: tab !== 'all' ? (tab as NewsStatus) : undefined,
-      }),
+    queryFn: () => newsApi.getManage({ status: tab !== 'all' ? (tab as NewsStatus) : undefined }),
   })
 
   const allNews = data?.data ?? []
-  const news = categoryFilter
-    ? allNews.filter((n) => n.category === Number(categoryFilter))
-    : allNews
+  const news    = cat ? allNews.filter(n => n.category === Number(cat)) : allNews
+
+  const tabCounts = {
+    all: allNews.length,
+    1: allNews.filter(n => n.status === 1).length,
+    2: allNews.filter(n => n.status === 2).length,
+    3: allNews.filter(n => n.status === 3).length,
+  }
 
   const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })
+
+  // Pinned first, then by date
+  const sorted = [...news].sort((a, b) => {
+    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
+    return new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()
+  })
 
   return (
-    <div className="space-y-6">
-      {/* Табы */}
-      <div className="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm w-fit flex-wrap">
-        {TABS.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setTab(key)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-              tab === key
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* Фильтр по категории */}
-      <div className="flex gap-4 items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm w-52"
-        >
-          <option value="">Все категории</option>
-          {NEWS_CATEGORY_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
-        <button
-          onClick={() => setCategoryFilter('')}
-          className="px-4 py-2 text-slate-600 font-medium text-sm hover:text-primary transition-colors"
-        >
-          Сбросить
-        </button>
-        <span className="ml-auto text-sm text-slate-400">
-          Всего: <span className="font-semibold text-slate-700">{news.length}</span>
-        </span>
-      </div>
-
-      {/* Список */}
-      {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+    <div>
+      {/* Toolbar */}
+      <div className="flex items-center gap-3 mb-5 flex-wrap">
+        <div className="flex gap-0.5 bg-zinc-100 rounded-xl p-1 shrink-0">
+          {TABS.map(({ key, label }) => {
+            const count = tabCounts[key as keyof typeof tabCounts] ?? 0
+            return (
+              <button key={key} onClick={() => setTab(key)}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  tab === key ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'
+                }`}>
+                {label}
+                <span className={`tabular-nums text-xs ${tab === key ? 'text-zinc-500' : 'text-zinc-400'}`}>{count}</span>
+              </button>
+            )
+          })}
         </div>
-      ) : news.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm text-center py-20 text-slate-400">
-          <span className="material-symbols-outlined text-5xl mb-3 block">campaign</span>
-          <p className="font-medium">Объявления не найдены</p>
-          <p className="text-sm mt-1">Нажмите «Создать объявление» чтобы добавить первое</p>
+
+        <select value={cat} onChange={e => setCat(e.target.value)}
+          className="px-3 py-1.5 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-900 w-44">
+          <option value="">{t("pages.announcements.allCategories")}</option>
+          {NEWS_CATEGORY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+        {cat && <button onClick={() => setCat('')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">Сбросить</button>}
+
+        <button onClick={() => setIsCreateOpen(true)}
+          className="ml-auto flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shrink-0">
+          <Plus size={14} />Создать объявление
+        </button>
+      </div>
+
+      {/* Grid */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {[1,2,3,4,5,6].map(i => <div key={i} className="h-36 skeleton rounded-xl" />)}
+        </div>
+      ) : sorted.length === 0 ? (
+        <div className="bg-white rounded-xl border border-zinc-200 py-20 text-center text-zinc-400">
+          <span className="material-symbols-outlined text-4xl mb-2 block">campaign</span>
+          <p className="text-sm">Объявления не найдены</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-3">
-          {news.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedNewsId(item.id)}
-              className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  {/* Бейджи */}
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
-                    {item.isPinned && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">
-                        <span className="material-symbols-outlined text-[12px]">push_pin</span>
-                        Закреплено
-                      </span>
-                    )}
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${NEWS_STATUS_COLORS[item.status]}`}>
-                      {NEWS_STATUS_LABELS[item.status]}
-                    </span>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${NEWS_CATEGORY_COLORS[item.category]}`}>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {sorted.map(item => {
+            const isArchived = item.status === 3
+            const isDraft    = item.status === 1
+            return (
+              <div key={item.id} onClick={() => setSelectedNewsId(item.id)}
+                className={`group relative bg-white rounded-xl border-t-2 border border-zinc-200 hover:border-zinc-300 hover:shadow-md transition-all cursor-pointer flex flex-col ${
+                  CAT_ACCENT[item.category] ?? 'border-t-zinc-300'
+                } ${isArchived ? 'opacity-55' : ''}`}>
+
+                <div className="flex-1 p-5">
+                  {/* Top: category + status */}
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold ${CAT_BG[item.category] ?? 'bg-zinc-100 text-zinc-500'}`}>
                       {NEWS_CATEGORY_LABELS[item.category]}
+                    </span>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${STATUS_STYLE[item.status]}`}>
+                      {NEWS_STATUS_LABELS[item.status]}
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-bold text-slate-900 group-hover:text-primary transition-colors truncate">
-                    {item.title}
-                  </h3>
-
-                  <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-400">
-                    <span className="flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[13px]">event</span>
-                      {formatDate(item.publishDate)}
-                    </span>
-                    {item.attachmentsCount > 0 && (
-                      <span className="flex items-center gap-1">
-                        <span className="material-symbols-outlined text-[13px]">attach_file</span>
-                        {item.attachmentsCount}
-                      </span>
-                    )}
+                  {/* Title */}
+                  <div className="flex items-start gap-1.5 mb-3">
+                    {item.isPinned && <Pin size={12} className="text-amber-400 shrink-0 mt-0.5" />}
+                    <h3 className={`text-sm font-semibold leading-snug line-clamp-2 ${isDraft ? 'text-zinc-500' : 'text-zinc-900'}`}>
+                      {item.title}
+                    </h3>
                   </div>
                 </div>
 
-                <span className="material-symbols-outlined text-slate-300 text-[20px] group-hover:text-primary transition-colors shrink-0 mt-1">
-                  chevron_right
-                </span>
+                {/* Footer */}
+                <div className="px-5 pb-4 flex items-center justify-between gap-2 border-t border-zinc-100 pt-3">
+                  <span className="flex items-center gap-1.5 text-xs text-zinc-400">
+                    <Calendar size={11} />
+                    {formatDate(item.publishDate)}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {item.attachmentsCount > 0 && (
+                      <span className="flex items-center gap-0.5 text-xs text-zinc-400">
+                        <Paperclip size={11} />{item.attachmentsCount}
+                      </span>
+                    )}
+                    <span className="material-symbols-outlined text-zinc-200 group-hover:text-zinc-400 transition-colors text-[16px]">
+                      open_in_new
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
-      {/* Модалки */}
-      {isCreateOpen && (
-        <NewsFormModal
-          isOpen={isCreateOpen}
-          onClose={() => setIsCreateOpen(false)}
-        />
-      )}
-
-      <NewsDetailModal
-        isOpen={!!selectedNewsId}
-        onClose={() => setSelectedNewsId(null)}
-        newsId={selectedNewsId}
-      />
+      {isCreateOpen && <NewsFormModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />}
+      <NewsDetailModal isOpen={!!selectedNewsId} onClose={() => setSelectedNewsId(null)} newsId={selectedNewsId} />
     </div>
   )
 }

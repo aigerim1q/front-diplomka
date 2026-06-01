@@ -26,8 +26,8 @@ interface CreateVotingModalProps {
 }
 
 const inputClass = (error?: boolean) =>
-  `w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ${
-    error ? 'border-red-400' : 'border-slate-200'
+  `w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-zinc-900 transition-all ${
+    error ? 'border-red-400' : 'border-zinc-200'
   }`
 
 const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
@@ -83,7 +83,7 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Создать опрос">
+    <Modal isOpen={isOpen} onClose={handleClose} title="Создать опрос" size="lg">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {serverError && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-3 py-2 rounded-lg">
@@ -93,7 +93,7 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
 
         {/* Заголовок */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Заголовок</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">Заголовок</label>
           <input
             {...register('title')}
             className={inputClass(!!errors.title)}
@@ -104,7 +104,7 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
 
         {/* Описание */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Описание</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">Описание</label>
           <textarea
             {...register('description')}
             rows={3}
@@ -117,7 +117,7 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
         {/* Даты */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Начало</label>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">Начало</label>
             <input
               {...register('startDate')}
               type="datetime-local"
@@ -126,7 +126,7 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
             {errors.startDate && <p className="mt-1 text-xs text-red-500">{errors.startDate.message}</p>}
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Окончание</label>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">Окончание</label>
             <input
               {...register('endDate')}
               type="datetime-local"
@@ -141,23 +141,23 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
           <input
             {...register('showResultsAfterVote')}
             type="checkbox"
-            className="size-4 rounded border-slate-300 text-primary focus:ring-primary"
+            className="size-4 rounded border-slate-300 accent-zinc-900"
           />
-          <span className="text-sm text-slate-700">Показывать результаты после голосования</span>
+          <span className="text-sm text-zinc-700">Показывать результаты после голосования</span>
         </label>
 
         {/* Варианты ответов */}
         <div className="border-t border-slate-100 pt-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
               Варианты ответов
             </p>
-            <span className="text-xs text-slate-400">{options.length}/10</span>
+            <span className="text-xs text-zinc-400">{options.length}/10</span>
           </div>
           <div className="space-y-2">
             {options.map((opt, i) => (
               <div key={i} className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-400 w-5 text-right shrink-0">{i + 1}.</span>
+                <span className="text-xs font-bold text-zinc-400 w-5 text-right shrink-0">{i + 1}.</span>
                 <input
                   value={opt}
                   onChange={(e) => updateOption(i, e.target.value)}
@@ -169,7 +169,7 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
                   <button
                     type="button"
                     onClick={() => removeOption(i)}
-                    className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors shrink-0"
+                    className="p-1.5 rounded-lg hover:bg-red-50 text-zinc-300 hover:text-red-500 transition-colors shrink-0"
                   >
                     <span className="material-symbols-outlined text-[18px]">close</span>
                   </button>
@@ -181,7 +181,7 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
             <button
               type="button"
               onClick={addOption}
-              className="mt-3 flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
+              className="mt-3 flex items-center gap-1.5 text-sm text-zinc-600 hover:text-zinc-900 font-medium transition-colors"
             >
               <span className="material-symbols-outlined text-[18px]">add</span>
               Добавить вариант
@@ -193,14 +193,14 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors"
+            className="px-4 py-2 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-medium text-sm transition-colors"
           >
             Отмена
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="px-4 py-2 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-60"
+            className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium transition-colors disabled:opacity-50"
           >
             {isPending ? 'Создание...' : 'Создать'}
           </button>

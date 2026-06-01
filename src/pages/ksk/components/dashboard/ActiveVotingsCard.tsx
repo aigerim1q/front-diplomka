@@ -1,5 +1,6 @@
-﻿import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { ArrowRight } from 'lucide-react'
 import { VotingListItem } from '@/types'
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
   isLoading?: boolean
 }
 
-const computeProgress = (v: VotingListItem): { pct: number; daysLeft: number } => {
+const computeProgress = (v: VotingListItem) => {
   const start = new Date(v.startDate).getTime()
   const end = new Date(v.endDate).getTime()
   const now = Date.now()
@@ -30,62 +31,73 @@ const ActiveVotingsCard = ({ votings, isLoading }: Props) => {
   const localeTag = i18n.language === 'kk' ? 'kk-KZ' : 'ru-RU'
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm h-full flex flex-col">
-      <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-emerald-600">how_to_vote</span>
-          <h3 className="text-lg font-bold text-slate-900">{t('kskDashboard.activeVotings.title')}</h3>
-        </div>
+    <div className="bg-white rounded-xl border border-zinc-200 h-full flex flex-col">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-zinc-900">{t('kskDashboard.activeVotings.title')}</h3>
         <button
           onClick={() => navigate('/polls')}
-          className="text-primary text-sm font-semibold hover:underline"
+          className="flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors"
         >
           {t('kskDashboard.activeVotings.viewAll')}
+          <ArrowRight size={12} />
         </button>
       </div>
 
+      {/* Body */}
       {isLoading ? (
-        <div className="p-6 space-y-3 flex-1">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 bg-slate-100 rounded-lg animate-pulse" />
-          ))}
+        <div className="p-4 space-y-4 flex-1">
+          {[1,2].map(i => <div key={i} className="h-16 skeleton rounded-lg" />)}
         </div>
       ) : items.length === 0 ? (
-        <div className="py-12 text-center text-slate-400 flex-1 flex flex-col items-center justify-center">
-          <span className="material-symbols-outlined text-5xl mb-2 block">how_to_vote</span>
-          <p className="text-sm">{t('kskDashboard.activeVotings.empty')}</p>
+        <div className="py-12 text-center text-zinc-400 flex-1 flex flex-col items-center justify-center">
+          <span className="material-symbols-outlined text-4xl mb-2">how_to_vote</span>
+          <p className="text-xs">{t('kskDashboard.activeVotings.empty')}</p>
         </div>
       ) : (
-        <ul className="divide-y divide-slate-100 flex-1">
+        <ul className="divide-y divide-zinc-100 flex-1">
           {items.map((v) => {
             const { pct, daysLeft } = computeProgress(v)
+            const isUrgent = daysLeft <= 2
+
             return (
               <li
                 key={v.id}
                 onClick={() => navigate('/polls')}
-                className="px-6 py-4 hover:bg-slate-50 transition-colors cursor-pointer"
+                className="px-5 py-4 hover:bg-zinc-50 transition-colors cursor-pointer"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-semibold text-slate-900 truncate flex-1 pr-2">
-                    {v.title}
-                  </p>
-                  <span className="text-xs font-bold text-emerald-700 shrink-0">
+                {/* Title + days */}
+                <div className="flex items-start justify-between gap-3 mb-2.5">
+                  <p className="text-sm font-medium text-zinc-900 leading-snug line-clamp-2 flex-1">{v.title}</p>
+                  <span className={`shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    isUrgent
+                      ? 'bg-red-50 text-red-600 border border-red-100'
+                      : 'bg-zinc-100 text-zinc-500 border border-zinc-200'
+                  }`}>
                     {daysLeft === 0
                       ? t('kskDashboard.activeVotings.today')
-                      : t('kskDashboard.activeVotings.daysShort', { count: daysLeft })}
+                      : `${daysLeft} дн`}
                   </span>
                 </div>
-                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+
+                {/* Progress bar */}
+                <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-emerald-500 transition-all"
-                    style={{ width: `${pct}%` }}
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${pct}%`,
+                      background: isUrgent ? '#ef4444' : '#3b82f6',
+                    }}
                   />
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1.5">
-                  {t('kskDashboard.activeVotings.meta', {
+
+                {/* Meta */}
+                <p className="text-[11px] text-zinc-400 mt-1.5">
+                  {v.optionsCount} {t('kskDashboard.activeVotings.meta', {
                     count: v.optionsCount,
-                    date: new Date(v.endDate).toLocaleDateString(localeTag),
-                  })}
+                    date: new Date(v.endDate).toLocaleDateString(localeTag, { day: 'numeric', month: 'short' }),
+                  }).split(' ').slice(1).join(' ')}
+                  &nbsp;· до {new Date(v.endDate).toLocaleDateString(localeTag, { day: 'numeric', month: 'short' })}
                 </p>
               </li>
             )

@@ -27,8 +27,8 @@ interface NewsFormModalProps {
 }
 
 const inputClass = (error?: boolean) =>
-  `w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ${
-    error ? 'border-red-400' : 'border-slate-200'
+  `w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-zinc-900 transition-all ${
+    error ? 'border-red-400' : 'border-zinc-200'
   }`
 
 const getErrorMessage = (err: unknown, fallback: string): string => {
@@ -132,7 +132,7 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
       : null
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={isEdit ? 'Редактировать объявление' : 'Создать объявление'}>
+    <Modal isOpen={isOpen} onClose={handleClose} title={isEdit ? 'Редактировать объявление' : 'Создать объявление'} size="lg">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-3 py-2 rounded-lg">
@@ -143,24 +143,24 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
         {/* Фото — только при создании */}
         {!isEdit && (
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Фото <span className="text-slate-400 font-normal">(необязательно, jpg/png, до 5 МБ)</span>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">
+              Фото <span className="text-zinc-400 font-normal">(необязательно, jpg/png, до 5 МБ)</span>
             </label>
             {imagePreview ? (
-              <div className="relative rounded-xl overflow-hidden border border-slate-200 aspect-video">
+              <div className="relative rounded-xl overflow-hidden border border-zinc-200 aspect-video">
                 <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
                 <button
                   type="button"
                   onClick={handleRemoveImage}
                   className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full p-1 shadow transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[18px] text-slate-600">close</span>
+                  <span className="material-symbols-outlined text-[18px] text-zinc-600">close</span>
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-200 rounded-xl p-5 cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
+              <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-zinc-200 rounded-xl p-5 cursor-pointer hover:border-zinc-400 hover:bg-zinc-50 transition-all">
                 <span className="material-symbols-outlined text-3xl text-slate-300">add_photo_alternate</span>
-                <span className="text-sm text-slate-400">Нажмите чтобы загрузить фото</span>
+                <span className="text-sm text-zinc-400">Нажмите чтобы загрузить фото</span>
                 <input
                   type="file"
                   accept="image/jpeg,image/png"
@@ -174,7 +174,7 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
 
         {/* Заголовок */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Заголовок</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">Заголовок</label>
           <input
             {...register('title')}
             className={inputClass(!!errors.title)}
@@ -185,7 +185,7 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
 
         {/* Содержание */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Содержание</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">Содержание</label>
           <textarea
             {...register('content')}
             rows={4}
@@ -197,7 +197,7 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
 
         {/* Категория */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Категория</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">Категория</label>
           <select {...register('category')} className={inputClass(!!errors.category)}>
             {NEWS_CATEGORY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -209,7 +209,7 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
         {/* Даты */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Дата публикации</label>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">Дата публикации</label>
             <input
               {...register('publishDate')}
               type="datetime-local"
@@ -218,8 +218,8 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
             {errors.publishDate && <p className="mt-1 text-xs text-red-500">{errors.publishDate.message}</p>}
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Дата окончания <span className="text-slate-400 font-normal">(необязательно)</span>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">
+              Дата окончания <span className="text-zinc-400 font-normal">(необязательно)</span>
             </label>
             <input
               {...register('expirationDate')}
@@ -234,18 +234,18 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
           <input
             {...register('isPinned')}
             type="checkbox"
-            className="size-4 rounded border-slate-300 text-primary focus:ring-primary"
+            className="size-4 rounded border-slate-300 accent-zinc-900"
           />
-          <span className="text-sm text-slate-700">Закрепить объявление</span>
+          <span className="text-sm text-zinc-700">Закрепить объявление</span>
         </label>
 
         <div className="flex gap-3 justify-end pt-2">
           <button type="button" onClick={handleClose}
-            className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">
+            className="px-4 py-2 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-medium text-sm transition-colors">
             Отмена
           </button>
           <button type="submit" disabled={isPending}
-            className="px-4 py-2 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-60">
+            className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium transition-colors disabled:opacity-50">
             {isPending ? 'Сохранение...' : isEdit ? 'Сохранить' : 'Создать'}
           </button>
         </div>

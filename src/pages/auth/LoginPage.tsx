@@ -79,7 +79,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F3F4F6] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-zinc-50 flex items-center justify-center p-4">
       <main className="w-full max-w-md">
         <BrandHeader />
         <LoginForm onSubmit={handleLogin} serverError={serverError} />

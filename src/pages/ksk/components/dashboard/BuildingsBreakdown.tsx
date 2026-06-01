@@ -1,15 +1,43 @@
-﻿import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  Tooltip,
-  CartesianGrid,
-  LabelList,
+import {
+  BarChart, Bar, XAxis, YAxis, ResponsiveContainer,
+  CartesianGrid, Cell, LabelList,
+  Tooltip as RechartsTooltip,
 } from 'recharts'
 import { useTranslation } from 'react-i18next'
 import { Resident } from '@/types'
+
+// Amber — matches workers capacity "in progress" bar
+const AMBER = '#f59e0b'
+
+interface TooltipPayloadItem {
+  value: number
+}
+
+interface CustomTooltipProps {
+  active?: boolean
+  payload?: TooltipPayloadItem[]
+  label?: string
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  if (!active || !payload?.length) return null
+  return (
+    <div style={{
+      background: '#18181b',
+      border: '1px solid #3f3f46',
+      borderRadius: 8,
+      padding: '8px 12px',
+      fontSize: 12,
+      color: '#fafafa',
+      minWidth: 150,
+    }}>
+      <p style={{ color: '#a1a1aa', marginBottom: 4 }}>
+        Корпус: <span style={{ color: '#fafafa', fontWeight: 600 }}>{label || '—'}</span>
+      </p>
+      <p style={{ color: '#fafafa', fontWeight: 600 }}>{payload[0].value} жильцов</p>
+    </div>
+  )
+}
 
 interface Props {
   residents: Resident[]
@@ -21,7 +49,7 @@ const BuildingsBreakdown = ({ residents, isLoading }: Props) => {
 
   const grouped = new Map<string, number>()
   for (const r of residents) {
-    const key = r.building?.trim() || 'вЂ”'
+    const key = r.building?.trim() || '—'
     grouped.set(key, (grouped.get(key) ?? 0) + 1)
   }
 
@@ -30,64 +58,35 @@ const BuildingsBreakdown = ({ residents, isLoading }: Props) => {
     .sort((a, b) => b.value - a.value)
     .slice(0, 8)
 
-  const hasData = data.length > 0
+  const max = Math.max(...data.map((d) => d.value), 1)
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-bold text-slate-900">{t('kskDashboard.buildings.title')}</h3>
-          <p className="text-xs text-slate-500 mt-1">{t('kskDashboard.buildings.subtitle')}</p>
-        </div>
-        <span className="material-symbols-outlined text-slate-300">apartment</span>
+    <div className="bg-white rounded-xl border border-zinc-200 p-5">
+      <div className="mb-4">
+        <h3 className="text-sm font-semibold text-zinc-900">{t('kskDashboard.buildings.title')}</h3>
+        <p className="text-xs text-zinc-400 mt-0.5">{t('kskDashboard.buildings.subtitle')}</p>
       </div>
 
       {isLoading ? (
-        <div className="h-[260px] animate-pulse bg-slate-100 rounded-lg" />
-      ) : !hasData ? (
-        <div className="h-[260px] flex flex-col items-center justify-center text-slate-400">
-          <span className="material-symbols-outlined text-5xl mb-2">home</span>
-          <p className="text-sm">{t('kskDashboard.buildings.empty')}</p>
+        <div className="h-[240px] skeleton rounded-lg" />
+      ) : data.length === 0 ? (
+        <div className="h-[240px] flex flex-col items-center justify-center text-zinc-400">
+          <span className="material-symbols-outlined text-4xl mb-2">home</span>
+          <p className="text-xs">{t('kskDashboard.buildings.empty')}</p>
         </div>
       ) : (
-        <div style={{ width: '100%', height: 260 }}>
+        <div style={{ width: '100%', height: 240 }}>
           <ResponsiveContainer>
-            <BarChart data={data} margin={{ left: -10, right: 24, top: 8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-              <XAxis
-                dataKey="name"
-                tick={{ fontSize: 11, fill: '#64748b' }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 11, fill: '#64748b' }}
-                axisLine={false}
-                tickLine={false}
-                allowDecimals={false}
-              />
-              <Tooltip
-                cursor={{ fill: 'rgba(148, 163, 184, 0.1)' }}
-                contentStyle={{
-                  background: 'rgb(15 23 42)',
-                  border: '1px solid rgb(51 65 85)',
-                  borderRadius: '0.5rem',
-                  fontSize: '0.875rem',
-                  color: 'rgb(241 245 249)',
-                }}
-                formatter={(value) => [
-                  `${value} ${t('kskDashboard.buildings.countSuffix')}`,
-                  t('kskDashboard.buildings.label'),
-                ]}
-                labelFormatter={(l) => `${t('kskDashboard.buildings.building')}: ${l}`}
-              />
-              <Bar dataKey="value" fill="#0891b2" radius={[6, 6, 0, 0]} maxBarSize={48}>
-                <LabelList
-                  dataKey="value"
-                  position="top"
-                  style={{ fontSize: 11, fontWeight: 600 }}
-                  className="fill-slate-900"
-                />
+            <BarChart data={data} margin={{ left: -10, right: 16, top: 20, bottom: 0 }}>
+              <CartesianGrid stroke="#f4f4f5" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#71717a' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: '#71717a' }} axisLine={false} tickLine={false} allowDecimals={false} />
+              <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(245,158,11,0.05)' }} />
+              <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={48}>
+                <LabelList dataKey="value" position="top" style={{ fontSize: 11, fontWeight: 600, fill: '#71717a' }} />
+                {data.map((d, i) => (
+                  <Cell key={i} fill={AMBER} fillOpacity={0.3 + 0.7 * (d.value / max)} />
+                ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>

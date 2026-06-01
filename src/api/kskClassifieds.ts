@@ -16,6 +16,9 @@ export const kskClassifiedsApi = {
   toggleActive: (id: string) =>
     api.patch(`/api/ksk/classifieds/${id}/toggle-active`),
 
+  reject: (id: string, comment: string) =>
+    api.patch(`/api/ksk/classifieds/${id}/reject`, { comment }),
+
   delete: (id: string) =>
     api.delete(`/api/ksk/classifieds/${id}`),
 }

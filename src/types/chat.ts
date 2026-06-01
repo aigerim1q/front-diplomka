@@ -1,8 +1,13 @@
 export interface ChatMessageDto {
   id: string
   threadId: string
-  authorId: string
-  authorName: string
+  // API may return either authorId or senderId
+  authorId?: string
+  senderId?: string
+  // API may return either authorName, senderName or senderFullName
+  authorName?: string
+  senderName?: string
+  senderFullName?: string
   text: string
   isDeleted: boolean
   createdAt: string

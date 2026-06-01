@@ -17,44 +17,39 @@ import PinnedNewsCard from './components/dashboard/PinnedNewsCard'
 import ActiveVotingsCard from './components/dashboard/ActiveVotingsCard'
 import DashboardHero from './components/dashboard/DashboardHero'
 
+import { ArrowUpRight } from 'lucide-react'
+
 interface KpiProps {
   icon: string
   label: string
   value: number | string
   hint?: string
-  iconBg: string
-  iconColor: string
   accent?: 'default' | 'warn' | 'good'
   onClick?: () => void
 }
 
-const KpiCard = ({ icon, label, value, hint, iconBg, iconColor, accent = 'default', onClick }: KpiProps) => {
-  const accentBorder = {
-    default: 'border-slate-200',
-    warn: 'border-amber-200',
-    good: 'border-emerald-200',
-  }[accent]
-
-  return (
-    <div
-      onClick={onClick}
-      className={`bg-white p-6 rounded-xl border ${accentBorder} shadow-sm hover:shadow-md transition-all ${ onClick ?'cursor-pointer hover:-translate-y-0.5' : ''
-      }`}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className={`${iconBg} ${iconColor} p-3 rounded-lg`}>
-          <span className="material-symbols-outlined">{icon}</span>
-        </div>
+const KpiCard = ({ label, value, hint, accent = 'default', onClick }: KpiProps) => (
+  <div
+    onClick={onClick}
+    className={`group relative bg-white rounded-xl border transition-all overflow-hidden ${
+      onClick ? 'cursor-pointer hover:shadow-sm' : ''
+    } ${accent === 'warn' && Number(value) > 0 ? 'border-zinc-900' : 'border-zinc-200 hover:border-zinc-300'}`}
+  >
+    {accent === 'warn' && Number(value) > 0 && (
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-zinc-900" />
+    )}
+    <div className="px-4 py-4">
+      <div className="flex items-start justify-between gap-2 mb-3">
+        <p className="text-xs text-zinc-500 leading-snug">{label}</p>
         {onClick && (
-          <span className="material-symbols-outlined text-slate-300 text-[20px]">arrow_outward</span>
+          <ArrowUpRight size={13} className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0 mt-0.5" />
         )}
       </div>
-      <p className="text-slate-500 text-sm font-medium">{label}</p>
-      <h3 className="text-3xl font-bold mt-1 text-slate-900">{value}</h3>
-      {hint && <p className="text-xs text-slate-500 mt-2">{hint}</p>}
+      <p className="text-[28px] font-bold text-zinc-900 tabular-nums leading-none">{value}</p>
+      {hint && <p className="text-[11px] text-zinc-400 mt-2 leading-snug">{hint}</p>}
     </div>
-  )
-}
+  </div>
+)
 
 const KskDashboardPage = () => {
   const navigate = useNavigate()
@@ -139,14 +134,12 @@ const KskDashboardPage = () => {
       />
 
       {/* KPI ряд */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiCard
           icon="group"
           label={t('kskDashboard.kpi.residents')}
           value={totalResidents}
           hint={residentsHint}
-          iconBg="bg-primary/10"
-          iconColor="text-primary"
           onClick={() => navigate('/residents')}
         />
         <KpiCard
@@ -154,8 +147,6 @@ const KskDashboardPage = () => {
           label={t('kskDashboard.kpi.needsAttention')}
           value={needsAttention}
           hint={t('kskDashboard.kpi.needsAttentionHint', { new: newCount, inProgress: inProgressCount })}
-          iconBg="bg-amber-100"
-          iconColor="text-amber-600"
           accent={newCount > 0 ? 'warn' : 'default'}
           onClick={() => navigate('/requests')}
         />
@@ -164,8 +155,6 @@ const KskDashboardPage = () => {
           label={t('kskDashboard.kpi.availableWorkers')}
           value={availableWorkers}
           hint={t('kskDashboard.kpi.availableWorkersHint', { total: activeWorkers.length })}
-          iconBg="bg-emerald-100"
-          iconColor="text-emerald-600"
           accent="good"
           onClick={() => navigate('/workers')}
         />
@@ -178,8 +167,6 @@ const KskDashboardPage = () => {
               ? t('kskDashboard.kpi.activeVotingsHintToday', { count: completedToday })
               : t('kskDashboard.kpi.activeVotingsHintDefault')
           }
-          iconBg="bg-blue-100"
-          iconColor="text-blue-600"
           onClick={() => navigate('/polls')}
         />
       </div>

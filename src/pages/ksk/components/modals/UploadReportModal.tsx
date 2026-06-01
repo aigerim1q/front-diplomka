@@ -37,23 +37,24 @@ const ACCEPTED_MIME = [
 const MAX_SIZE = 25 * 1024 * 1024
 
 const inputClass = (error?: boolean) =>
-  `w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ${
-    error ? 'border-red-400' : 'border-slate-200'
+  `w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-zinc-900 transition-all ${
+    error ? 'border-red-400' : 'border-zinc-200'
   }`
 
 interface Props {
   isOpen: boolean
   onClose: () => void
   defaultYear?: number
+  defaultMonth?: number
 }
 
-const UploadReportModal = ({ isOpen, onClose, defaultYear }: Props) => {
+const UploadReportModal = ({ isOpen, onClose, defaultYear, defaultMonth }: Props) => {
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const currentYear = new Date().getFullYear()
 
   const [year, setYear] = useState(defaultYear ?? currentYear)
-  const [month, setMonth] = useState<number | ''>('')
+  const [month, setMonth] = useState<number | ''>(defaultMonth ?? '')
   const [title, setTitle] = useState('')
   const [beginDate, setBeginDate] = useState('')
   const [file, setFile] = useState<File | null>(null)
@@ -64,7 +65,7 @@ const UploadReportModal = ({ isOpen, onClose, defaultYear }: Props) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ksk-reports'] })
       queryClient.invalidateQueries({ queryKey: ['ksk-report-years'] })
-      toast.success('Документ загружен')
+      toast.success('Отчёт загружен')
       handleClose()
     },
     onError: (err: unknown) => {
@@ -124,12 +125,12 @@ const UploadReportModal = ({ isOpen, onClose, defaultYear }: Props) => {
   const yearOptions = Array.from({ length: 10 }, (_, i) => currentYear - i)
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Загрузить документ">
+    <Modal isOpen={isOpen} onClose={handleClose} title="Загрузить отчёт">
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Year + Month */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Год *</label>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">Год *</label>
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
@@ -141,8 +142,8 @@ const UploadReportModal = ({ isOpen, onClose, defaultYear }: Props) => {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Месяц <span className="text-slate-400 font-normal">необязательно</span>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">
+              Месяц <span className="text-zinc-400 font-normal">необязательно</span>
             </label>
             <select
               value={month}
@@ -159,8 +160,8 @@ const UploadReportModal = ({ isOpen, onClose, defaultYear }: Props) => {
 
         {/* Title */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">
-            Заголовок <span className="text-slate-400 font-normal">необязательно</span>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">
+            Заголовок <span className="text-zinc-400 font-normal">необязательно</span>
           </label>
           <input
             value={title}
@@ -173,8 +174,8 @@ const UploadReportModal = ({ isOpen, onClose, defaultYear }: Props) => {
 
         {/* BeginDate */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">
-            Дата публикации <span className="text-slate-400 font-normal">необязательно — без даты публикуется сразу</span>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">
+            Дата публикации <span className="text-zinc-400 font-normal">необязательно — без даты публикуется сразу</span>
           </label>
           <input
             type="datetime-local"
@@ -186,20 +187,20 @@ const UploadReportModal = ({ isOpen, onClose, defaultYear }: Props) => {
 
         {/* File */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Файл *</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">Файл *</label>
           <div
             onClick={() => fileInputRef.current?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => { e.preventDefault(); handleFileSelect(e.dataTransfer.files[0]) }}
             className={`cursor-pointer rounded-xl border-2 border-dashed p-6 flex flex-col items-center justify-center gap-2 transition-colors ${
-              fileError ? 'border-red-400 bg-red-50' : 'border-slate-200 hover:bg-slate-50'
+              fileError ? 'border-red-400 bg-red-50' : 'border-zinc-200 hover:bg-zinc-50'
             }`}
           >
             {file ? (
               <>
-                <span className="material-symbols-outlined text-4xl text-primary">description</span>
-                <p className="text-sm font-semibold text-slate-800 text-center break-all">{file.name}</p>
-                <p className="text-xs text-slate-500">{formatFileSize(file.size)}</p>
+                <span className="material-symbols-outlined text-4xl text-zinc-600">description</span>
+                <p className="text-sm font-semibold text-zinc-800 text-center break-all">{file.name}</p>
+                <p className="text-xs text-zinc-500">{formatFileSize(file.size)}</p>
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); setFile(null) }}
@@ -210,9 +211,9 @@ const UploadReportModal = ({ isOpen, onClose, defaultYear }: Props) => {
               </>
             ) : (
               <>
-                <span className="material-symbols-outlined text-4xl text-slate-400">cloud_upload</span>
-                <p className="text-sm font-medium text-slate-600">Нажмите или перетащите файл</p>
-                <p className="text-xs text-slate-400">pdf, doc, docx, xls, xlsx, ppt, pptx, txt, csv, jpg, png — до 25 МБ</p>
+                <span className="material-symbols-outlined text-4xl text-zinc-400">cloud_upload</span>
+                <p className="text-sm font-medium text-zinc-600">Нажмите или перетащите файл</p>
+                <p className="text-xs text-zinc-400">pdf, doc, docx, xls, xlsx, ppt, pptx, txt, csv, jpg, png — до 25 МБ</p>
               </>
             )}
             <input
@@ -230,14 +231,14 @@ const UploadReportModal = ({ isOpen, onClose, defaultYear }: Props) => {
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors"
+            className="px-4 py-2 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-medium text-sm transition-colors"
           >
             Отмена
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="px-4 py-2 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-60"
+            className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium transition-colors disabled:opacity-50"
           >
             {isPending ? 'Загрузка...' : 'Загрузить'}
           </button>

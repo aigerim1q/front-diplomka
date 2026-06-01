@@ -39,6 +39,8 @@ export interface PhotoItem {
   orderIndex: number
 }
 
+export type ClassifiedStatus = 'Pending' | 'Published' | 'Rejected'
+
 export interface ClassifiedAdListItem {
   id: string
   authorId: string
@@ -48,6 +50,9 @@ export interface ClassifiedAdListItem {
   coverUrl: string | null
   authorName: string
   isActive: boolean
+  status: ClassifiedStatus
+  moderationNote: string | null
+  rejectionReason: string | null
   viewsCount: number
   createdAt: string
 }
@@ -56,6 +61,7 @@ export interface ClassifiedAdDetail extends ClassifiedAdListItem {
   description: string
   authorApartment: string | null
   authorAvatarUrl: string | null
+  contactPhone: string | null
   photos: PhotoItem[]
   updatedAt: string
 }
@@ -65,4 +71,5 @@ export interface ClassifiedsQuery {
   pageSize?: number
   search?: string
   category?: ClassifiedCategory | string
+  status?: 'pending' | 'published' | 'rejected' | 'all'
 }

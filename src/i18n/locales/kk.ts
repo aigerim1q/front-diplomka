@@ -49,7 +49,7 @@ export default {
     classifieds: 'Маркетплейс',
     chatLounge: 'ТҮК чаты',
     contacts: 'ТҮК байланыстары',
-    reports: 'Құжаттар',
+    reports: 'Есептер',
   },
   dashboard: {
     title: 'Шолу',
@@ -373,5 +373,59 @@ export default {
     newChatMessage: 'Чатта жаңа хабарлама',
     daysLeft: '{{count}} күн қалды',
     endsToday: 'бүгін аяқталады',
+  },
+
+  pages: {
+    residents: {
+      tabAll: 'Барлығы', tabActive: 'Белсенді', tabBlocked: 'Бұғатталған',
+      search: 'Аты немесе email бойынша іздеу...', addBtn: 'Тұрғын қосу',
+      count: 'тұрғын', notFound: 'Тұрғындар табылмады',
+    },
+    workers: {
+      tabAll: 'Барлығы', tabActive: 'Белсенді', tabInactive: 'Белсенді емес',
+      allSpecializations: 'Барлық мамандықтар', search: 'Аты бойынша іздеу...',
+      addBtn: 'Қызметкер қосу', notFound: 'Қызметкерлер табылмады',
+      deactivate: 'Белсенділікті тоқтату',
+    },
+    requests: {
+      tabAll: 'Барлығы', tabNew: 'Жаңалар', tabInProgress: 'Жұмыста',
+      tabCompleted: 'Аяқталды', tabCancelled: 'Бас тартылды',
+      allCategories: 'Барлық санаттар', search: 'Өтінімдерді іздеу...',
+      notFound: 'Өтінімдер табылмады',
+    },
+    announcements: {
+      tabAll: 'Барлығы', tabDrafts: 'Жобалар', tabPublished: 'Жарияланған',
+      tabArchive: 'Мұрағат', allCategories: 'Барлық санаттар',
+      createBtn: 'Хабарландыру жасау', notFound: 'Хабарландырулар табылмады',
+      resetFilter: 'Тазалау',
+    },
+    polls: {
+      tabAll: 'Барлығы', tabDrafts: 'Жобалар', tabActive: 'Белсенді',
+      tabCompleted: 'Аяқталған', createBtn: 'Сауалнама жасау',
+      notFound: 'Сауалнамалар табылмады', options: 'нұсқа.',
+      today: 'Бүгін', daysLeft: 'күн қалды', lastDay: 'соңғы күн',
+    },
+    reports: {
+      title: 'Есептер', upload: 'Есеп жүктеу',
+      allDocuments: 'Барлық құжаттар', annual: 'Жылдық',
+      notFound: '{{year}} жылдағы есептер жоқ',
+      uploadAnnual: 'Жылдық есеп жүктеу',
+      year: 'Жыл', count: 'есеп',
+      months: ['Қаңтар','Ақпан','Наурыз','Сәуір','Мамыр','Маусым','Шілде','Тамыз','Қыркүйек','Қазан','Қараша','Желтоқсан'],
+      monthsShort: ['Қаң','Ақп','Нау','Сәу','Мам','Мау','Шіл','Там','Қыр','Қаз','Қар','Жел'],
+      file_1: 'файл', file_2: 'файл', file_5: 'файл',
+      today: 'Бүгін аяқталады', lastDay: 'соңғы күн',
+    },
+    contacts: {
+      addBtn: 'Байланыс қосу', positions: 'Лауазымдар',
+      notFound: 'Байланыстар әзірге қосылмаған', count: 'байланыс',
+      positionsCount: 'лауазым', systemTag: 'жүйелік',
+      newPosition: 'Жаңа лауазым', existing: 'Бар лауазымдар',
+    },
+    services: {
+      createBtn: 'Сервис жасау', inactive: 'Белсенді еместер',
+      notFound: 'Сервистер табылмады', count: 'сервис',
+      search: 'Атауы немесе провайдер бойынша іздеу...',
+    },
   },
 }

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Plus, ChevronRight } from 'lucide-react'
 import { votingsApi } from '@/api/votings'
 import {
   VotingStatus,
@@ -11,28 +12,20 @@ import VotingDetailModal from '@/pages/ksk/components/modals/VotingDetailModal'
 
 const TABS: { key: 'all' | VotingStatus; label: string }[] = [
   { key: 'all', label: 'Все' },
-  { key: 1, label: 'Черновики' },
-  { key: 2, label: 'Активные' },
-  { key: 3, label: 'Завершённые' },
+  { key: 1,     label: 'Черновики' },
+  { key: 2,     label: 'Активные' },
+  { key: 3,     label: 'Завершённые' },
 ]
 
 const ConstructionPollsPage = () => {
-  const [tab, setTab] = useState<'all' | VotingStatus>('all')
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [tab, setTab]                     = useState<'all' | VotingStatus>('all')
+  const [isCreateOpen, setIsCreateOpen]   = useState(false)
   const [selectedVotingId, setSelectedVotingId] = useState<string | null>(null)
 
-  useEffect(() => {
-    const handler = () => setIsCreateOpen(true)
-    window.addEventListener('openAddModal', handler)
-    return () => window.removeEventListener('openAddModal', handler)
-  }, [])
-
   const { data, isLoading } = useQuery({
-    queryKey: ['votings', tab],
+    queryKey: ['construction-votings', tab],
     queryFn: () =>
-      votingsApi.getAll({
-        status: tab !== 'all' ? (tab as VotingStatus) : undefined,
-      }),
+      votingsApi.getAll({ status: tab !== 'all' ? (tab as VotingStatus) : undefined }),
   })
 
   const votings = data?.data ?? []
@@ -41,74 +34,94 @@ const ConstructionPollsPage = () => {
     new Date(d).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })
 
   return (
-    <div className="space-y-6">
-      {/* Табы */}
-      <div className="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm w-fit">
-        {TABS.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setTab(key)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-              tab === key
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+    <div className="space-y-4">
+
+      {/* Toolbar */}
+      <div className="flex items-center gap-3">
+        {/* Status tabs */}
+        <div className="flex gap-0.5 bg-zinc-100 rounded-xl p-1">
+          {TABS.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                tab === key
+                  ? 'bg-white text-zinc-900 shadow-sm'
+                  : 'text-zinc-500 hover:text-zinc-700'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={() => setIsCreateOpen(true)}
+          className="ml-auto flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+        >
+          <Plus size={14} />
+          Создать опрос
+        </button>
       </div>
 
-      {/* Контент */}
+      {/* Content */}
       {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-        </div>
-      ) : votings.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm text-center py-20 text-slate-400">
-          <span className="material-symbols-outlined text-5xl mb-3 block">poll</span>
-          <p className="font-medium">Опросы не найдены</p>
-          <p className="text-sm mt-1">Нажмите «Создать опрос» чтобы добавить первый</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {votings.map((voting) => (
-            <div
-              key={voting.id}
-              onClick={() => setSelectedVotingId(voting.id)}
-              className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${VOTING_STATUS_COLORS[voting.status]}`}>
-                      {VOTING_STATUS_LABELS[voting.status]}
-                    </span>
-                    <span className="text-xs text-slate-400">
-                      {formatDate(voting.startDate)} — {formatDate(voting.endDate)}
-                    </span>
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-900 group-hover:text-primary transition-colors truncate">
-                    {voting.title}
-                  </h3>
-                  <p className="text-sm text-slate-500 mt-1 line-clamp-2">{voting.description}</p>
-                </div>
-                <div className="flex flex-col items-end gap-2 shrink-0">
-                  <div className="flex items-center gap-1.5 text-slate-400 text-xs">
-                    <span className="material-symbols-outlined text-[16px]">check_box</span>
-                    <span>{voting.optionsCount} вариантов</span>
-                  </div>
-                  <span className="material-symbols-outlined text-slate-300 text-[20px] group-hover:text-primary transition-colors">
-                    chevron_right
-                  </span>
-                </div>
+        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
+          {[1,2,3].map(i => (
+            <div key={i} className="px-5 py-4 border-b border-zinc-100 flex items-center gap-4">
+              <div className="space-y-1.5 flex-1">
+                <div className="h-3 w-48 skeleton rounded" />
+                <div className="h-2.5 w-72 skeleton rounded" />
               </div>
+              <div className="h-5 w-16 skeleton rounded-full" />
             </div>
           ))}
         </div>
+      ) : votings.length === 0 ? (
+        <div className="bg-white rounded-xl border border-zinc-200 py-20 text-center text-zinc-400">
+          <span className="material-symbols-outlined text-4xl mb-2 block">poll</span>
+          <p className="text-sm font-medium">Опросы не найдены</p>
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="mt-4 inline-flex items-center gap-1.5 bg-zinc-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 transition-colors"
+          >
+            <Plus size={13} />
+            Создать первый опрос
+          </button>
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
+          <ul className="divide-y divide-zinc-100">
+            {votings.map((voting) => (
+              <li
+                key={voting.id}
+                onClick={() => setSelectedVotingId(voting.id)}
+                className="flex items-center gap-4 px-5 py-4 hover:bg-zinc-50 transition-colors cursor-pointer group"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${VOTING_STATUS_COLORS[voting.status]}`}>
+                      {VOTING_STATUS_LABELS[voting.status]}
+                    </span>
+                    <span className="text-xs text-zinc-400">
+                      {formatDate(voting.startDate)} — {formatDate(voting.endDate)}
+                    </span>
+                  </div>
+                  <p className="text-sm font-medium text-zinc-900 truncate">{voting.title}</p>
+                  {voting.description && (
+                    <p className="text-xs text-zinc-400 mt-0.5 truncate">{voting.description}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-3 shrink-0 text-zinc-400">
+                  <span className="text-xs">{voting.optionsCount} вариантов</span>
+                  <ChevronRight size={14} className="group-hover:text-zinc-600 transition-colors" />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
-      {/* Модалки */}
       <CreateVotingModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}

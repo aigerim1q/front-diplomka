@@ -29,8 +29,8 @@ interface EditServiceModalProps {
 }
 
 const inputClass = (error?: boolean) =>
-  `w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ${
-    error ? 'border-red-400' : 'border-slate-200'
+  `w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-zinc-900 transition-all ${
+    error ? 'border-red-400' : 'border-zinc-200'
   }`
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
@@ -121,7 +121,7 @@ const EditServiceModal = ({ isOpen, onClose, service }: EditServiceModalProps) =
     <Modal isOpen={isOpen} onClose={handleClose} title="Редактировать сервис">
       <form onSubmit={handleSubmit((data) => mutate(data))} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Обложка</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">Обложка</label>
           <div
             onClick={() => fileInputRef.current?.click()}
             onDragOver={(e) => e.preventDefault()}
@@ -130,7 +130,7 @@ const EditServiceModal = ({ isOpen, onClose, service }: EditServiceModalProps) =
               handleFileSelect(e.dataTransfer.files[0])
             }}
             className={`relative cursor-pointer rounded-xl border-2 border-dashed h-44 flex items-center justify-center overflow-hidden transition-colors ${
-              imageError ? 'border-red-400 bg-red-50' : 'border-slate-200 hover:bg-slate-50'
+              imageError ? 'border-red-400 bg-red-50' : 'border-zinc-200 hover:bg-zinc-50'
             }`}
           >
             {previewSrc ? (
@@ -141,7 +141,7 @@ const EditServiceModal = ({ isOpen, onClose, service }: EditServiceModalProps) =
                 </div>
               </>
             ) : (
-              <div className="text-center text-slate-400">
+              <div className="text-center text-zinc-400">
                 <span className="material-symbols-outlined text-4xl">cloud_upload</span>
                 <p className="text-sm font-medium mt-1">Нажмите или перетащите фото</p>
               </div>
@@ -155,31 +155,31 @@ const EditServiceModal = ({ isOpen, onClose, service }: EditServiceModalProps) =
             />
           </div>
           {imageError && <p className="mt-1 text-xs text-red-500">{imageError}</p>}
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-zinc-400">
             Если не выбрать новое фото — текущее останется
           </p>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Название</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">Название</label>
           <input {...register('title')} className={inputClass(!!errors.title)} />
           {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Описание</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">Описание</label>
           <textarea {...register('description')} rows={3} className={inputClass(!!errors.description)} />
           {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Компания</label>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">Компания</label>
             <input {...register('providerName')} className={inputClass(!!errors.providerName)} />
             {errors.providerName && <p className="mt-1 text-xs text-red-500">{errors.providerName.message}</p>}
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Цена</label>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">Цена</label>
             <input {...register('priceText')} className={inputClass(!!errors.priceText)} />
             {errors.priceText && <p className="mt-1 text-xs text-red-500">{errors.priceText.message}</p>}
           </div>
@@ -187,12 +187,12 @@ const EditServiceModal = ({ isOpen, onClose, service }: EditServiceModalProps) =
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Телефон</label>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">Телефон</label>
             <input {...register('contactPhone')} className={inputClass(!!errors.contactPhone)} />
             {errors.contactPhone && <p className="mt-1 text-xs text-red-500">{errors.contactPhone.message}</p>}
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Контактное лицо</label>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">Контактное лицо</label>
             <input {...register('contactName')} className={inputClass(!!errors.contactName)} />
             {errors.contactName && <p className="mt-1 text-xs text-red-500">{errors.contactName.message}</p>}
           </div>
@@ -202,14 +202,14 @@ const EditServiceModal = ({ isOpen, onClose, service }: EditServiceModalProps) =
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors"
+            className="px-4 py-2 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-medium text-sm transition-colors"
           >
             Отмена
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="px-4 py-2 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-60"
+            className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium transition-colors disabled:opacity-50"
           >
             {isPending ? 'Сохранение...' : 'Сохранить'}
           </button>
