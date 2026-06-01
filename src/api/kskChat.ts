@@ -32,4 +32,7 @@ export const kskChatApi = {
 
   editMessage: (id: string, text: string) =>
     api.patch<ChatMessageDto>(`/api/chat/messages/${id}`, { text }),
+
+  getOrCreateDmThread: (otherUserId: string) =>
+    api.post<{ threadId: string }>('/api/chat/threads/with-user', { otherUserId }),
 }

@@ -1,12 +1,14 @@
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Search, Plus } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
 import LanguageSwitcher from '@/components/shared/LanguageSwitcher'
 import NotificationsBell from '@/components/shared/NotificationsBell'
 
 const Header = () => {
   const location = useLocation()
   const { t } = useTranslation()
+  const { user, isKskAdmin } = useAuth()
 
   const ADD_BUTTONS: Record<string, string> = {
     '/users': t('users.addUser'),
@@ -32,8 +34,9 @@ const Header = () => {
     '/polls': t('nav.polls'),
     '/services': t('services.title'),
     '/classifieds': t('classifieds.title'),
-    '/chat-lounge': t('chatLounge.title'),
+    '/chat': t('chatLounge.title'),
     '/contacts': t('contacts.title'),
+    '/team': 'Команда',
   }
 
   const title = PAGE_TITLES[location.pathname] ?? 'MyHome'
@@ -41,7 +44,15 @@ const Header = () => {
 
   return (
     <header className="h-14 bg-white border-b border-zinc-200 flex items-center justify-between px-6 sticky top-0 z-40">
-      <h2 className="text-sm font-semibold text-zinc-900">{title}</h2>
+      <div className="flex items-center gap-2">
+        <h2 className="text-sm font-semibold text-zinc-900">{title}</h2>
+        {isKskAdmin && user?.complexId && (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-500 text-xs font-medium">
+            <span className="material-symbols-outlined text-[13px]">apartment</span>
+            ЖК #{user.complexId.slice(0, 8)}
+          </span>
+        )}
+      </div>
       <div className="flex items-center gap-2">
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" size={14} />

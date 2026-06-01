@@ -56,36 +56,25 @@ const ChatLoungePage = () => {
   }, [messages.length])
 
   // ─── Load history once on mount ───────────────────────────────────────────
-  const loadHistory = async (tid: string | null, kid: string | null) => {
+  const loadHistory = async (_tid: string | null, kid: string | null) => {
     try {
       let items: ChatMessageDto[] = []
 
-      // Primary: lounge endpoint — all users' messages for this KSK
       if (kid) {
         try {
           const res = await kskChatApi.getLoungeHistory(kid, 1, PAGE_SIZE)
           const raw = res.data as any
-          const arr: ChatMessageDto[] = Array.isArray(raw?.items) ? raw.items
-            : Array.isArray(raw) ? raw : []
-          if (arr.length > 0) items = arr
-        } catch (e) {
-          console.warn('[chat] getLoungeHistory failed, trying thread endpoint:', e)
-        }
-      }
-
-      // Fallback: thread-scoped endpoint
-      if (items.length === 0 && tid) {
-        try {
-          const res = await kskChatApi.getThreadHistory(tid, 1, PAGE_SIZE)
-          const raw = res.data as any
           items = Array.isArray(raw?.items) ? raw.items
             : Array.isArray(raw) ? raw : []
         } catch (e) {
-          console.warn('[chat] getThreadHistory failed:', e)
+          console.warn('[chat] getLoungeHistory failed:', e)
         }
       }
 
-      const visible = items.filter((m) => !m.isDeleted).sort(byTime)
+      // Only show lounge messages — filter out DMs (threadType 1)
+      const visible = items
+        .filter((m) => !m.isDeleted && m.threadType !== 1)
+        .sort(byTime)
       setMessages(visible)
     } catch (err) {
       console.error('[chat] loadHistory error:', err)
@@ -124,6 +113,8 @@ const ChatLoungePage = () => {
 
       // New message from anyone — just append, never replace
       connection.on('ReceiveMessage', (msg: ChatMessageDto) => {
+        // Only show lounge messages (threadType 2), ignore DMs (threadType 1)
+        if (msg.threadType === 1) return
         setMessages((prev) =>
           prev.some((m) => m.id === msg.id) ? prev : [...prev, msg].sort(byTime)
         )

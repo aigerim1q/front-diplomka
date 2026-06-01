@@ -215,7 +215,7 @@ const NotificationsBell = () => {
         title: t('notifications.newChatMessage'),
         description: `${sender}: ${m.text}`,
         timestamp: ts,
-        to: '/chat-lounge',
+        to: '/chat',
       })
     }
 

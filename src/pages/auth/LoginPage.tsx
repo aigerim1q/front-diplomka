@@ -14,6 +14,8 @@ const ROLE_MAP: Record<string, number> = {
   'KskAdmin': 3,
   'BusinessAdmin': 4,
   'Resident': 5,
+  'Worker': 6,
+  'KskSeniorAdmin': 7,
 }
 
 const ROLE_ROUTES: Record<number, string> = {
@@ -22,6 +24,8 @@ const ROLE_ROUTES: Record<number, string> = {
   3: '/residents',
   4: '/dashboard',
   5: '/dashboard',
+  6: '/dashboard',
+  7: '/team',
 }
 
 // Ключ роли в JWT от .NET Identity
@@ -37,6 +41,7 @@ const parseJwt = (token: string): AuthUser => {
     email: decoded.email,
     role: role as UserRole,
     tenantId: decoded.tenantId,
+    complexId: decoded.complexId,
     mustChangePassword: false,
   }
 }

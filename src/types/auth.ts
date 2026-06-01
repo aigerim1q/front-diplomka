@@ -26,6 +26,8 @@ export type UserRole =
   | 3  // KskAdmin
   | 4  // BusinessAdmin
   | 5  // Resident
+  | 6  // Worker
+  | 7  // KskSeniorAdmin
 
 export type UserStatus = 1 | 2 // 1 = Active, 2 = Blocked
 
@@ -35,4 +37,5 @@ export interface AuthUser {
   role: UserRole
   tenantId?: string
   mustChangePassword: boolean
+  complexId?: string
 }

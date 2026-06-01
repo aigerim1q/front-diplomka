@@ -124,6 +124,7 @@ const ConstructionPollsPage = () => {
 
       <CreateVotingModal
         isOpen={isCreateOpen}
+        isConstructionAdmin
         onClose={() => setIsCreateOpen(false)}
       />
 

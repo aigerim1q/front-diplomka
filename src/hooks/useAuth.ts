@@ -12,6 +12,7 @@ export const useAuth = () => {
   const isConstructionAdmin = user?.role === 2
   const isKskAdmin = user?.role === 3
   const isBusinessAdmin = user?.role === 4
+  const isKskSeniorAdmin = user?.role === 7
 
   return {
     user,
@@ -21,6 +22,7 @@ export const useAuth = () => {
     isConstructionAdmin,
     isKskAdmin,
     isBusinessAdmin,
+    isKskSeniorAdmin,
     setTokens,
     setUser,
     clearAuth,

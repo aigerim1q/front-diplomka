@@ -49,7 +49,7 @@ const ChatPreviewCard = () => {
           </h3>
         </div>
         <button
-          onClick={() => navigate('/chat-lounge')}
+          onClick={() => navigate('/chat')}
           className="text-primary hover:bg-primary/5 rounded-lg p-1.5 transition-colors shrink-0"
           title={t('kskDashboard.chat.viewAll')}
         >
@@ -75,7 +75,7 @@ const ChatPreviewCard = () => {
           </p>
           {kskId && (
             <button
-              onClick={() => navigate('/chat-lounge')}
+              onClick={() => navigate('/chat')}
               className="mt-3 text-xs font-semibold text-primary hover:underline"
             >
               {t('kskDashboard.chat.viewAll')} в†’
@@ -89,7 +89,7 @@ const ChatPreviewCard = () => {
             return (
               <li
                 key={m.id}
-                onClick={() => navigate('/chat-lounge')}
+                onClick={() => navigate('/chat')}
                 className="px-5 py-3 flex items-start gap-3 hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <div className="size-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">

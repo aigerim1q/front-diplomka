@@ -59,6 +59,8 @@ export interface VotingResults {
 }
 
 export interface CreateVotingRequest {
+  targetKskTenantId?: string
+  targetComplexId?: string
   title: string
   description: string
   startDate: string

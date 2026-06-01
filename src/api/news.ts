@@ -16,6 +16,8 @@ const toNewsFormData = (data: CreateNewsRequest, image?: File | null): FormData 
   fd.append('PublishDate', data.publishDate)
   fd.append('IsPinned', String(data.isPinned))
   if (data.expirationDate) fd.append('ExpirationDate', data.expirationDate)
+  if (data.targetKskTenantId) fd.append('TargetKskTenantId', data.targetKskTenantId)
+  if (data.targetComplexId) fd.append('TargetComplexId', data.targetComplexId)
   if (image) fd.append('Image', image)
   return fd
 }

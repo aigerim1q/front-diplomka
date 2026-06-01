@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axios from 'axios'
 import Modal from '@/components/shared/Modal'
 import { newsApi } from '@/api/news'
+import { complexesApi } from '@/api/complexes'
 import { NewsDetail, NEWS_CATEGORY_OPTIONS, NewsCategory } from '@/types'
 
 const schema = z.object({
@@ -16,6 +17,8 @@ const schema = z.object({
   publishDate: z.string().min(1, 'Обязательное поле'),
   expirationDate: z.string().optional(),
   isPinned: z.boolean(),
+  targetKskTenantId: z.string().optional(),
+  targetComplexId: z.string().optional(),
 })
 
 type NewsForm = z.infer<typeof schema>
@@ -24,6 +27,8 @@ interface NewsFormModalProps {
   isOpen: boolean
   onClose: () => void
   news?: NewsDetail | null
+  isConstructionAdmin?: boolean
+  isSeniorAdmin?: boolean
 }
 
 const inputClass = (error?: boolean) =>
@@ -33,16 +38,28 @@ const inputClass = (error?: boolean) =>
 
 const getErrorMessage = (err: unknown, fallback: string): string => {
   if (axios.isAxiosError(err)) {
-    return err.response?.data?.message ?? err.response?.data?.errorCode ?? fallback
+    const code = err.response?.data?.errorCode
+    if (code === 'TARGET_KSK_REQUIRED') return 'Выберите жилой комплекс'
+    return err.response?.data?.message ?? fallback
   }
   return fallback
 }
 
-const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
+const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdmin }: NewsFormModalProps) => {
   const queryClient = useQueryClient()
   const isEdit = !!news
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(news?.imageUrl ?? null)
+
+  const { data: complexesData } = useQuery({
+    queryKey: ['complexes-for-news'],
+    queryFn: () => complexesApi.getAll({ pageSize: 100 }),
+    enabled: (!!isConstructionAdmin || !!isSeniorAdmin) && !isEdit,
+  })
+
+  const complexes = (complexesData?.data?.items ?? []).filter(
+    (c) => c.isActive && c.linkedKskTenantId
+  )
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<NewsForm>({
     resolver: zodResolver(schema),
@@ -55,7 +72,7 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
           expirationDate: news.expirationDate ? news.expirationDate.slice(0, 16) : '',
           isPinned: news.isPinned,
         }
-      : { isPinned: false, category: '1' },
+      : { isPinned: false, category: '1', targetKskTenantId: '' },
   })
 
   const { mutate: createNews, isPending: isCreating, error: createError } = useMutation({
@@ -66,6 +83,8 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
       publishDate: new Date(data.publishDate).toISOString(),
       expirationDate: data.expirationDate ? new Date(data.expirationDate).toISOString() : undefined,
       isPinned: data.isPinned,
+      targetKskTenantId: data.targetKskTenantId || undefined,
+      targetComplexId: data.targetComplexId || undefined,
     }, imageFile),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['news-manage'] })
@@ -110,18 +129,23 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
   }
 
   const handleClose = () => {
-    reset({ isPinned: false, category: '1' })
+    reset({ isPinned: false, category: '1', targetKskTenantId: '' })
     setImageFile(null)
     setImagePreview(null)
     onClose()
   }
 
   const onSubmit = (data: NewsForm) => {
-    if (isEdit) {
-      updateNews(data)
-    } else {
-      createNews(data)
+    if ((isConstructionAdmin || isSeniorAdmin) && !isEdit && !data.targetComplexId) {
+      toast.error('Выберите жилой комплекс')
+      return
     }
+    if (isConstructionAdmin && !isEdit && !data.targetKskTenantId) {
+      toast.error('Выберите жилой комплекс')
+      return
+    }
+    if (isEdit) updateNews(data)
+    else createNews(data)
   }
 
   const isPending = isCreating || isUpdating
@@ -137,6 +161,48 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-3 py-2 rounded-lg">
             {errorMessage}
+          </div>
+        )}
+
+        {/* Выбор ЖК — для ConstructionAdmin и KskSeniorAdmin при создании */}
+        {(isConstructionAdmin || isSeniorAdmin) && !isEdit && (
+          <div>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">
+              Жилой комплекс <span className="text-red-400">*</span>
+            </label>
+            {complexes.length === 0 ? (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 text-sm">
+                <span className="material-symbols-outlined text-[18px]">warning</span>
+                Нет привязанных ЖК. Сначала привяжите КСК к ЖК.
+              </div>
+            ) : (
+              <>
+                {/* hidden field for kskTenantId (ConstructionAdmin only) */}
+                {isConstructionAdmin && (
+                  <input type="hidden" {...register('targetKskTenantId')} />
+                )}
+                <select
+                  {...register('targetComplexId')}
+                  className={inputClass(!!errors.targetComplexId)}
+                  onChange={(e) => {
+                    const opt = complexes.find(cx => cx.id === e.target.value)
+                    if (isConstructionAdmin && opt?.linkedKskTenantId) {
+                      // set hidden kskTenantId field via form
+                    }
+                  }}
+                >
+                  <option value="">Выберите ЖК...</option>
+                  {complexes.map((cx) => (
+                    <option key={cx.id} value={cx.id}>
+                      {cx.name} — {cx.address}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+            {errors.targetComplexId && (
+              <p className="mt-1 text-xs text-red-500">{errors.targetComplexId.message}</p>
+            )}
           </div>
         )}
 
@@ -244,7 +310,9 @@ const NewsFormModal = ({ isOpen, onClose, news }: NewsFormModalProps) => {
             className="px-4 py-2 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-medium text-sm transition-colors">
             Отмена
           </button>
-          <button type="submit" disabled={isPending}
+          <button
+            type="submit"
+            disabled={isPending || ((isConstructionAdmin || isSeniorAdmin) && !isEdit && complexes.length === 0)}
             className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium transition-colors disabled:opacity-50">
             {isPending ? 'Сохранение...' : isEdit ? 'Сохранить' : 'Создать'}
           </button>

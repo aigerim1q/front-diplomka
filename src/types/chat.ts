@@ -1,10 +1,28 @@
+export interface ChatParticipant {
+  userId: string
+  fullName?: string
+  name?: string
+  avatarUrl?: string | null
+  apartmentNumber?: string | null
+}
+
+export interface ChatThreadDto {
+  threadId?: string
+  id?: string
+  type: number | 'Lounge' | 'Direct'
+  participants?: ChatParticipant[]
+  name?: string
+  participantCount?: number
+  unreadCount: number
+  lastMessageAt: string | null
+  lastMessagePreview?: string | null
+}
+
 export interface ChatMessageDto {
   id: string
   threadId: string
-  // API may return either authorId or senderId
   authorId?: string
   senderId?: string
-  // API may return either authorName, senderName or senderFullName
   authorName?: string
   senderName?: string
   senderFullName?: string
@@ -12,15 +30,6 @@ export interface ChatMessageDto {
   isDeleted: boolean
   createdAt: string
   editedAt: string | null
-}
-
-export interface ChatThreadDto {
-  id: string
-  type: 'Lounge' | 'Direct'
-  name: string
-  participantCount: number
-  unreadCount: number
-  lastMessageAt: string | null
 }
 
 export interface ChatMessageDeletedEvent {

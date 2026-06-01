@@ -4,7 +4,7 @@ import { LogOut, type LucideIcon,
   LayoutDashboard, ClipboardList, Users, HardHat,
   Megaphone, BarChart2, ShoppingBag, MessageSquare,
   Briefcase, BookUser, ReceiptText,
-  Building2, Building,
+  Building2, Building, UserCog,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { authApi } from '@/api/auth'
@@ -40,7 +40,7 @@ const KSK_NAV: NavItem[][] = [
     { labelKey: 'nav.announcements', icon: Megaphone,      to: '/announcements' },
     { labelKey: 'nav.polls',         icon: BarChart2,      to: '/polls' },
     { labelKey: 'nav.classifieds',   icon: ShoppingBag,    to: '/classifieds' },
-    { labelKey: 'nav.chatLounge',    icon: MessageSquare,  to: '/chat-lounge' },
+    { labelKey: 'nav.chatLounge',    icon: MessageSquare,  to: '/chat' },
   ],
   [
     { labelKey: 'nav.services',  icon: Briefcase,    to: '/services' },
@@ -49,16 +49,41 @@ const KSK_NAV: NavItem[][] = [
   ],
 ]
 
+// KskSeniorAdmin: same as KSK but +team section, no chat lounge (no complexId)
+const KSK_SENIOR_NAV: NavItem[][] = [
+  [
+    { labelKey: 'nav.dashboard', icon: LayoutDashboard, to: '/ksk-dashboard' },
+    { labelKey: 'nav.requests',  icon: ClipboardList,   to: '/requests' },
+    { labelKey: 'nav.residents', icon: Users,           to: '/residents' },
+    { labelKey: 'nav.workers',   icon: HardHat,         to: '/workers' },
+  ],
+  [
+    { labelKey: 'nav.announcements', icon: Megaphone,   to: '/announcements' },
+    { labelKey: 'nav.polls',         icon: BarChart2,   to: '/polls' },
+    { labelKey: 'nav.classifieds',   icon: ShoppingBag, to: '/classifieds' },
+  ],
+  [
+    { labelKey: 'nav.services',  icon: Briefcase,    to: '/services' },
+    { labelKey: 'nav.contacts',  icon: BookUser,     to: '/contacts' },
+    { labelKey: 'nav.reports',   icon: ReceiptText,  to: '/reports' },
+  ],
+  [
+    { labelKey: 'nav.team', icon: UserCog, to: '/team' },
+  ],
+]
+
 const ROLE_NAV: Record<number, NavItem[][]> = {
   1: SUPER_ADMIN_NAV,
   2: CONSTRUCTION_NAV,
   3: KSK_NAV,
+  7: KSK_SENIOR_NAV,
 }
 
 const ROLE_LABEL_KEY: Record<number, string> = {
   1: 'users.roles.superAdmin',
   2: 'users.roles.constructionAdmin',
   3: 'users.roles.kskAdmin',
+  7: 'users.roles.kskSeniorAdmin',
 }
 
 const Sidebar = () => {
@@ -68,7 +93,8 @@ const Sidebar = () => {
   const { t } = useTranslation()
 
   const navGroups = ROLE_NAV[user?.role ?? 1] ?? SUPER_ADMIN_NAV
-  const roleLabel = t(ROLE_LABEL_KEY[user?.role ?? 1])
+  const roleKey   = ROLE_LABEL_KEY[user?.role ?? 1] ?? 'users.roles.superAdmin'
+  const roleLabel = t(roleKey)
   const initials  = user?.email?.[0]?.toUpperCase() ?? 'U'
 
   const handleLogout = async () => {

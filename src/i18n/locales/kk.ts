@@ -47,7 +47,9 @@ export default {
     polls: 'Сауалнамалар',
     services: 'Сервистер',
     classifieds: 'Маркетплейс',
+    team: 'Команда',
     chatLounge: 'ТҮК чаты',
+    messages: 'Жеке хабарлар',
     contacts: 'ТҮК байланыстары',
     reports: 'Есептер',
   },
@@ -87,6 +89,7 @@ export default {
     roles: {
       superAdmin: 'Супер Админ',
       constructionAdmin: 'Құрылыс компаниясы',
+      kskSeniorAdmin: 'КСК аға әкімшісі',
       kskAdmin: 'КСК',
       businessAdmin: 'Бизнес',
       resident: 'Тұрғын',
@@ -221,7 +224,8 @@ export default {
       Other: 'Басқа',
     },
   },
-  chatLounge: {
+  team: 'Команда',
+    chatLounge: {
     title: 'ТҮК чаты',
     subtitle: 'Тұрғындардың ортақ чаты · модератор режимі',
     empty: 'Әзірге хабарлар жоқ',

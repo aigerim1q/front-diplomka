@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Plus, Clock, ChevronRight } from 'lucide-react'
 import { votingsApi } from '@/api/votings'
 import { VotingStatus, VOTING_STATUS_LABELS } from '@/types'
+import { useAuth } from '@/hooks/useAuth'
 import CreateVotingModal from './components/modals/CreateVotingModal'
 import VotingDetailModal from './components/modals/VotingDetailModal'
 
@@ -35,6 +36,7 @@ const PollsPage = () => {
     { key: 3 as VotingStatus,     label: t('pages.polls.tabCompleted') },
   ]
   const [tab, setTab]                   = useState<'all' | VotingStatus>('all')
+  const { isKskSeniorAdmin } = useAuth()
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [selectedId, setSelectedId]     = useState<string | null>(null)
 
@@ -155,7 +157,7 @@ const PollsPage = () => {
         </div>
       )}
 
-      <CreateVotingModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+      <CreateVotingModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} isSeniorAdmin={isKskSeniorAdmin} />
       <VotingDetailModal isOpen={!!selectedId} onClose={() => setSelectedId(null)} votingId={selectedId} />
     </div>
   )

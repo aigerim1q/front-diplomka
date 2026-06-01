@@ -47,7 +47,9 @@ export default {
     polls: 'Опросы',
     services: 'Сервисы',
     classifieds: 'Маркетплейс',
+    team: 'Команда',
     chatLounge: 'Чат ЖК',
+    messages: 'Личные сообщения',
     contacts: 'Контакты ЖК',
     reports: 'Отчёты',
   },
@@ -87,6 +89,7 @@ export default {
     roles: {
       superAdmin: 'Супер Админ',
       constructionAdmin: 'Строительная компания',
+      kskSeniorAdmin: 'Старший администратор КСК',
       kskAdmin: 'КСК',
       businessAdmin: 'Бизнес',
       resident: 'Житель',
@@ -221,7 +224,8 @@ export default {
       Other: 'Прочее',
     },
   },
-  chatLounge: {
+  team: 'Команда',
+    chatLounge: {
     title: 'Чат ЖК',
     subtitle: 'Общий чат жильцов · режим модератора',
     empty: 'Сообщений пока нет',

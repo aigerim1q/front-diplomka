@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import Modal from '@/components/shared/Modal'
 import { votingsApi } from '@/api/votings'
+import { complexesApi } from '@/api/complexes'
 
 const schema = z.object({
   title: z.string().min(1, 'Обязательное поле').max(200, 'Максимум 200 символов'),
@@ -13,6 +14,8 @@ const schema = z.object({
   startDate: z.string().min(1, 'Обязательное поле'),
   endDate: z.string().min(1, 'Обязательное поле'),
   showResultsAfterVote: z.boolean(),
+  targetKskTenantId: z.string().optional(),
+  targetComplexId: z.string().optional(),
 }).refine((d) => new Date(d.endDate) > new Date(d.startDate), {
   message: 'Дата окончания должна быть позже даты начала',
   path: ['endDate'],
@@ -23,6 +26,8 @@ type CreateVotingForm = z.infer<typeof schema>
 interface CreateVotingModalProps {
   isOpen: boolean
   onClose: () => void
+  isConstructionAdmin?: boolean
+  isSeniorAdmin?: boolean
 }
 
 const inputClass = (error?: boolean) =>
@@ -30,19 +35,30 @@ const inputClass = (error?: boolean) =>
     error ? 'border-red-400' : 'border-zinc-200'
   }`
 
-const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
+const CreateVotingModal = ({ isOpen, onClose, isConstructionAdmin, isSeniorAdmin }: CreateVotingModalProps) => {
   const queryClient = useQueryClient()
   const [options, setOptions] = useState<string[]>(['', ''])
 
+  const { data: complexesData } = useQuery({
+    queryKey: ['complexes-for-voting'],
+    queryFn: () => complexesApi.getAll({ pageSize: 100 }),
+    enabled: !!isConstructionAdmin || !!isSeniorAdmin,
+  })
+
+  const complexes = (complexesData?.data?.items ?? []).filter(
+    (c) => c.isActive && c.linkedKskTenantId
+  )
+
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateVotingForm>({
     resolver: zodResolver(schema),
-    defaultValues: { showResultsAfterVote: true },
+    defaultValues: { showResultsAfterVote: true, targetKskTenantId: '' },
   })
 
   const { mutate, isPending, error: serverError } = useMutation({
     mutationFn: votingsApi.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['votings'] })
+      queryClient.invalidateQueries({ queryKey: ['construction-votings'] })
       toast.success('Опрос создан')
       handleClose()
     },
@@ -67,6 +83,14 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
   }
 
   const onSubmit = (data: CreateVotingForm) => {
+    if ((isConstructionAdmin || isSeniorAdmin) && !data.targetComplexId) {
+      toast.error('Выберите жилой комплекс')
+      return
+    }
+    if (isConstructionAdmin && !data.targetKskTenantId) {
+      toast.error('Выберите жилой комплекс')
+      return
+    }
     const filledOptions = options.map((o) => o.trim()).filter(Boolean)
     if (filledOptions.length < 2) {
       toast.error('Нужно минимум 2 варианта ответа')
@@ -79,6 +103,8 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
       endDate: new Date(data.endDate).toISOString(),
       showResultsAfterVote: data.showResultsAfterVote,
       options: filledOptions,
+      targetKskTenantId: data.targetKskTenantId || undefined,
+      targetComplexId: data.targetComplexId || undefined,
     })
   }
 
@@ -88,6 +114,33 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
         {serverError && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-3 py-2 rounded-lg">
             Ошибка при создании опроса
+          </div>
+        )}
+
+        {/* Выбор ЖК — для ConstructionAdmin и KskSeniorAdmin */}
+        {(isConstructionAdmin || isSeniorAdmin) && (
+          <div>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">
+              Жилой комплекс <span className="text-red-400">*</span>
+            </label>
+            {complexes.length === 0 ? (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 text-sm">
+                <span className="material-symbols-outlined text-[18px]">warning</span>
+                Нет привязанных ЖК. Сначала привяжите КСК к ЖК.
+              </div>
+            ) : (
+              <select
+                {...register('targetComplexId')}
+                className={inputClass(!!errors.targetComplexId)}
+              >
+                <option value="">Выберите ЖК...</option>
+                {complexes.map((cx) => (
+                  <option key={cx.id} value={cx.id}>
+                    {cx.name} — {cx.address}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         )}
 
@@ -199,7 +252,7 @@ const CreateVotingModal = ({ isOpen, onClose }: CreateVotingModalProps) => {
           </button>
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || ((isConstructionAdmin || isSeniorAdmin) && complexes.length === 0)}
             className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium transition-colors disabled:opacity-50"
           >
             {isPending ? 'Создание...' : 'Создать'}

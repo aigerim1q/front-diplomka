@@ -10,6 +10,7 @@ import {
   NEWS_CATEGORY_OPTIONS,
 } from '@/types'
 import NewsFormModal from './modals/NewsFormModal'
+import { useAuthStore } from '@/store/authStore'
 import NewsDetailModal from './modals/NewsDetailModal'
 
 const CAT_ACCENT: Record<number, string> = {
@@ -32,6 +33,9 @@ const STATUS_STYLE: Record<number, string> = {
 
 const AnnouncementsPage = () => {
   const { t } = useTranslation()
+  const user = useAuthStore((s) => s.user)
+  const isConstructionAdmin = user?.role === 2
+  const isSeniorAdmin = user?.role === 7
   const TABS = [
     { key: 'all' as const,  label: t('pages.announcements.tabAll') },
     { key: 1 as NewsStatus, label: t('pages.announcements.tabDrafts') },
@@ -163,7 +167,7 @@ const AnnouncementsPage = () => {
         </div>
       )}
 
-      {isCreateOpen && <NewsFormModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />}
+      {isCreateOpen && <NewsFormModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} isConstructionAdmin={isConstructionAdmin} isSeniorAdmin={isSeniorAdmin} />}
       <NewsDetailModal isOpen={!!selectedNewsId} onClose={() => setSelectedNewsId(null)} newsId={selectedNewsId} />
     </div>
   )

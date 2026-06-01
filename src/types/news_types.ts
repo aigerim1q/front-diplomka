@@ -75,6 +75,8 @@ export interface NewsDetail {
 }
 
 export interface CreateNewsRequest {
+  targetKskTenantId?: string
+  targetComplexId?: string
   title: string
   content: string
   category: NewsCategory

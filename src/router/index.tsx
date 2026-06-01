@@ -26,7 +26,8 @@ import AnnouncementsPage from '@/pages/ksk/AnnouncementsPage_ksk'
 import PollsPage from '@/pages/ksk/PollsPage'
 import ServicesPage from '@/pages/ksk/ServicesPage'
 import ClassifiedsPage from '@/pages/ksk/ClassifiedsPage'
-import ChatLoungePage from '@/pages/ksk/ChatLoungePage'
+import ChatPage from '@/pages/ksk/ChatPage'
+import TeamPage from '@/pages/ksk/TeamPage'
 import ContactsPage from '@/pages/ksk/ContactsPage'
 import ReportsPage from '@/pages/ksk/ReportsPage'
 
@@ -92,9 +93,33 @@ export const router = createBrowserRouter([
           { path: '/polls', element: <PollsPage /> },
           { path: '/services', element: <ServicesPage /> },
           { path: '/classifieds', element: <ClassifiedsPage /> },
-          { path: '/chat-lounge', element: <ChatLoungePage /> },
+          { path: '/chat', element: <ChatPage /> },
           { path: '/contacts', element: <ContactsPage /> },
           { path: '/reports', element: <ReportsPage /> },
+        ],
+      },
+    ],
+  },
+
+
+  // KskSeniorAdmin
+  {
+    element: <ProtectedRoute allowedRoles={[7]} />,
+    children: [
+      {
+        element: <DashboardLayout />,
+        children: [
+          { path: '/team',          element: <TeamPage /> },
+          { path: '/ksk-dashboard', element: <KskDashboardPage /> },
+          { path: '/residents',     element: <ResidentsPage /> },
+          { path: '/workers',       element: <WorkersPage /> },
+          { path: '/requests',      element: <RequestsPage /> },
+          { path: '/announcements', element: <AnnouncementsPage /> },
+          { path: '/polls',         element: <PollsPage /> },
+          { path: '/services',      element: <ServicesPage /> },
+          { path: '/classifieds',   element: <ClassifiedsPage /> },
+          { path: '/contacts',      element: <ContactsPage /> },
+          { path: '/reports',       element: <ReportsPage /> },
         ],
       },
     ],
