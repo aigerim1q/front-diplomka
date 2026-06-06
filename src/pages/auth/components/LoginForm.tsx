@@ -2,7 +2,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
-import LanguageSwitcher from '@/components/shared/LanguageSwitcher'
 
 const loginSchema = z.object({
   email: z.string().email('Введите корректный email'),
@@ -29,7 +28,12 @@ const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
   })
 
   return (
-    <section className="bg-white py-8 px-8 rounded-2xl border border-zinc-200">
+    <section>
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">{t('auth.welcomeBack')}</h1>
+        <p className="text-sm text-zinc-500 mt-1.5">{t('auth.welcomeSubtitle')}</p>
+      </header>
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
         {serverError && (
@@ -82,19 +86,16 @@ const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
         </div>
 
         {/* Remember me */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <input
-              {...register('remember')}
-              id="remember"
-              type="checkbox"
-              className="h-4 w-4 accent-zinc-900 border-zinc-300 rounded cursor-pointer"
-            />
-            <label htmlFor="remember" className="text-sm text-zinc-600 cursor-pointer">
-              {t('auth.rememberDevice')}
-            </label>
-          </div>
-          <LanguageSwitcher />
+        <div className="flex items-center gap-2">
+          <input
+            {...register('remember')}
+            id="remember"
+            type="checkbox"
+            className="h-4 w-4 accent-zinc-900 border-zinc-300 rounded cursor-pointer"
+          />
+          <label htmlFor="remember" className="text-sm text-zinc-600 cursor-pointer">
+            {t('auth.rememberDevice')}
+          </label>
         </div>
 
         {/* Кнопка */}

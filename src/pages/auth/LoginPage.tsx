@@ -5,8 +5,10 @@ import { useAuthStore } from '@/store/authStore'
 import { authApi } from '@/api/auth'
 import { AuthUser, UserRole } from '@/types'
 import BrandHeader from './components/BrandHeader'
+import BrandPanel from './components/BrandPanel'
 import LoginForm, { LoginFormValues } from './components/LoginForm'
 import PageFooter from './components/PageFooter'
+import LanguageSwitcher from '@/components/shared/LanguageSwitcher'
 
 const ROLE_MAP: Record<string, number> = {
   'SuperAdmin': 1,
@@ -84,10 +86,26 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex items-center justify-center p-4">
-      <main className="w-full max-w-md">
-        <BrandHeader />
-        <LoginForm onSubmit={handleLogin} serverError={serverError} />
+    <div className="min-h-screen flex bg-white">
+      <BrandPanel />
+
+      <main className="flex-1 flex flex-col px-6 py-8 sm:px-10">
+        {/* Шапка: бренд (моб.) + переключатель языка */}
+        <div className="flex items-center justify-between">
+          <div className="lg:hidden">
+            <BrandHeader />
+          </div>
+          <div className="ml-auto">
+            <LanguageSwitcher />
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="w-full max-w-sm animate-fade-in-up">
+            <LoginForm onSubmit={handleLogin} serverError={serverError} />
+          </div>
+        </div>
+
         <PageFooter />
       </main>
     </div>
