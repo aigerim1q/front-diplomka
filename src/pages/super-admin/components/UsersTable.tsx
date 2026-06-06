@@ -34,16 +34,14 @@ const UsersTable = ({ users, onBlock, onUnblock }: UsersTableProps) => {
           {users.map((user) => {
             const isBlocked = user.status === 2
             return (
-              <tr key={user.userId} className={`hover:bg-slate-50/50 transition-colors ${isBlocked ? 'opacity-70' : ''}`}>
+              <tr key={user.id} className={`hover:bg-slate-50/50 transition-colors ${isBlocked ? 'opacity-70' : ''}`}>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
-                      {user.firstName?.[0]?.toUpperCase() ?? user.email[0].toUpperCase()}
+                      {user.fullName?.[0]?.toUpperCase() ?? user.email[0].toUpperCase()}
                     </div>
                     <span className={`text-sm font-semibold ${isBlocked ? 'text-slate-400' : 'text-slate-900'}`}>
-                    {user.firstName && user.lastName
-                        ? `${user.firstName} ${user.lastName}`
-                        : user.email.split('@')[0]}
+                      {user.fullName || user.email.split('@')[0]}
                     </span>
                   </div>
                 </td>

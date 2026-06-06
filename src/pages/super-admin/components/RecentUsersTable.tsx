@@ -45,14 +45,14 @@ const RecentUsersTable = ({ users }: RecentUsersTableProps) => {
           </thead>
           <tbody className="divide-y divide-slate-200">
             {users.map((user) => (
-              <tr key={user.userId} className="hover:bg-slate-50 transition-colors">
+              <tr key={user.id} className="hover:bg-slate-50 transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-                      {user.firstName?.[0]?.toUpperCase() ?? user.email[0].toUpperCase()}
+                      {user.fullName?.[0]?.toUpperCase() ?? user.email[0].toUpperCase()}
                     </div>
                     <span className="text-sm font-semibold">
-                      {user.firstName} {user.lastName}
+                      {user.fullName}
                     </span>
                   </div>
                 </td>

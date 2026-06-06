@@ -1,10 +1,9 @@
 import { UserRole, UserStatus } from './auth'
 
 export interface User {
-  userId: string
+  id: string
   email: string
-  firstName: string
-  lastName: string
+  fullName: string
   role: UserRole
   status: UserStatus
   tenantId?: string

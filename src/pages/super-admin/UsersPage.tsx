@@ -73,18 +73,18 @@ const UsersPage = () => {
   const handleConfirmAction = () => {
     if (!confirmModal.user) return
     if (confirmModal.type === 'block') {
-      blockUser(confirmModal.user.userId)
+      blockUser(confirmModal.user.id)
     } else {
-      unblockUser(confirmModal.user.userId)
+      unblockUser(confirmModal.user.id)
     }
   }
 
-  const allUsers = (data?.data.items ?? []).filter((u) => u.role !== 5)
+  const allUsers = data?.data.items ?? []
   const users = search
     ? allUsers.filter(
         (u) =>
           u.email.toLowerCase().includes(search.toLowerCase()) ||
-          `${u.firstName ?? ''} ${u.lastName ?? ''}`.toLowerCase().includes(search.toLowerCase())
+          (u.fullName ?? '').toLowerCase().includes(search.toLowerCase())
       )
     : allUsers
 
@@ -137,7 +137,7 @@ const UsersPage = () => {
         onConfirm={handleConfirmAction}
         isLoading={isBlocking || isUnblocking}
         type={confirmModal.type}
-        userName={`${confirmModal.user?.firstName ?? ''} ${confirmModal.user?.lastName ?? ''}`}
+        userName={confirmModal.user?.fullName ?? ''}
       />
     </div>
   )
