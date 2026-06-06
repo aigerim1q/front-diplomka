@@ -21,7 +21,7 @@ const ROLE_MAP: Record<string, number> = {
 const ROLE_ROUTES: Record<number, string> = {
   1: '/dashboard',
   2: '/construction-dashboard',
-  3: '/residents',
+  3: '/ksk-dashboard',
   4: '/dashboard',
   5: '/dashboard',
   6: '/dashboard',
