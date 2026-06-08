@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { User } from '@/types'
 import { useRole } from '@/hooks/useRole'
 
@@ -16,6 +17,7 @@ interface UsersTableProps {
 }
 
 const UsersTable = ({ users, onBlock, onUnblock }: UsersTableProps) => {
+  const { t } = useTranslation()
   const { getRoleName } = useRole()
 
   return (
@@ -23,8 +25,8 @@ const UsersTable = ({ users, onBlock, onUnblock }: UsersTableProps) => {
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="bg-slate-50 border-b border-slate-200">
-            {['Name', 'Email', 'Role', 'Status', 'Actions'].map((col) => (
-              <th key={col} className={`px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider ${col === 'Actions' ? 'text-right' : ''}`}>
+            {[t('users.name'), t('users.email'), t('users.role'), t('common.status'), t('common.actions')].map((col, index) => (
+              <th key={col} className={`px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider ${index === 4 ? 'text-right' : ''}`}>
                 {col}
               </th>
             ))}
@@ -58,7 +60,7 @@ const UsersTable = ({ users, onBlock, onUnblock }: UsersTableProps) => {
                     isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                   }`}>
                     <span className={`size-1.5 rounded-full ${isBlocked ? 'bg-red-500' : 'bg-green-500'}`} />
-                    {isBlocked ? 'Blocked' : 'Active'}
+                    {isBlocked ? t('common.blocked') : t('common.active')}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
@@ -67,7 +69,7 @@ const UsersTable = ({ users, onBlock, onUnblock }: UsersTableProps) => {
                       <button
                         onClick={() => onUnblock(user)}
                         className="p-1.5 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
-                        title="Unblock"
+                        title={t('users.unblock')}
                       >
                         <span className="material-symbols-outlined text-[20px]">undo</span>
                       </button>
@@ -75,7 +77,7 @@ const UsersTable = ({ users, onBlock, onUnblock }: UsersTableProps) => {
                       <button
                         onClick={() => onBlock(user)}
                         className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
-                        title="Block"
+                        title={t('users.block')}
                       >
                         <span className="material-symbols-outlined text-[20px]">block</span>
                       </button>
@@ -91,7 +93,7 @@ const UsersTable = ({ users, onBlock, onUnblock }: UsersTableProps) => {
       {users.length === 0 && (
         <div className="text-center py-16 text-slate-400">
           <span className="material-symbols-outlined text-5xl mb-3 block">group</span>
-          <p className="font-medium">Пользователи не найдены</p>
+          <p className="font-medium">{t('users.notFound')}</p>
         </div>
       )}
     </div>

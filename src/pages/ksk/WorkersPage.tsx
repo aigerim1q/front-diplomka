@@ -39,7 +39,7 @@ const WorkersPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ksk-workers'] })
       setConfirmDeact(null)
-      toast.success('Работник деактивирован')
+      toast.success(t('workers.toast.deactivated'))
     },
   })
 
@@ -79,7 +79,7 @@ const WorkersPage = () => {
           {SPECIALIZATION_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
         {spec && (
-          <button onClick={() => setSpec('')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">Сбросить</button>
+          <button onClick={() => setSpec('')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">{t('tenants.reset')}</button>
         )}
 
         {/* Search */}
@@ -94,7 +94,7 @@ const WorkersPage = () => {
         <button onClick={() => setIsAddOpen(true)}
           className="flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shrink-0">
           <UserPlus size={14} />
-          Добавить работника
+          {t('pages.workers.addBtn')}
         </button>
       </div>
 
@@ -113,12 +113,12 @@ const WorkersPage = () => {
       ) : workers.length === 0 ? (
         <div className="bg-white rounded-xl border border-zinc-200 py-20 text-center text-zinc-400">
           <span className="material-symbols-outlined text-4xl mb-2 block">engineering</span>
-          <p className="text-sm">Работники не найдены</p>
+          <p className="text-sm">{t('pages.workers.notFound')}</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
           <div className="grid grid-cols-[2fr_1.2fr_1.2fr_1fr_1fr_80px] gap-4 px-5 py-3 border-b border-zinc-100 bg-zinc-50/60">
-            {['Работник','Телефон','Специализация','Занятость','Статус','Действия'].map((col, i) => (
+            {[t('pages.workers.worker'), t('workers.phone'), t('workers.specialization'), t('pages.workers.availability'), t('common.status'), t('common.actions')].map((col, i) => (
               <span key={i} className={`text-xs text-zinc-400 font-medium ${i===5?'text-right':''}`}>{col}</span>
             ))}
           </div>
@@ -154,25 +154,25 @@ const WorkersPage = () => {
                   {/* Занятость */}
                   <span className={`flex items-center gap-1.5 text-xs font-medium ${busy ? 'text-amber-600' : 'text-emerald-600'}`}>
                     <span className={`size-1.5 rounded-full shrink-0 ${busy ? 'bg-amber-400' : 'bg-emerald-400'}`} />
-                    {w.availabilityLabel || (busy ? 'Занят' : 'Свободен')}
+                    {w.availabilityLabel || (busy ? t('pages.workers.busy') : t('pages.workers.available'))}
                   </span>
 
                   {/* Статус */}
                   <span className="flex items-center gap-1.5 text-xs font-medium">
                     <span className={`size-1.5 rounded-full shrink-0 ${inactive ? 'bg-zinc-300' : 'bg-emerald-400'}`} />
                     <span className={inactive ? 'text-zinc-400' : 'text-zinc-700'}>
-                      {inactive ? 'Неактивен' : 'Активен'}
+                      {inactive ? t('common.inactive') : t('common.active')}
                     </span>
                   </span>
 
                   {/* Действия */}
                   <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => setEditWorker(w)} title="Редактировать"
+                    <button onClick={() => setEditWorker(w)} title={t('common.edit')}
                       className="size-7 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors">
                       <Edit size={13} />
                     </button>
                     {w.isActive && (
-                      <button onClick={() => setConfirmDeact(w)} title="Деактивировать"
+                      <button onClick={() => setConfirmDeact(w)} title={t('pages.workers.deactivate')}
                         className="size-7 flex items-center justify-center rounded-md text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-colors">
                         <UserX size={13} />
                       </button>

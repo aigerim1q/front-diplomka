@@ -95,11 +95,11 @@ const AnnouncementsPage = () => {
           <option value="">{t("pages.announcements.allCategories")}</option>
           {NEWS_CATEGORY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
-        {cat && <button onClick={() => setCat('')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">Сбросить</button>}
+        {cat && <button onClick={() => setCat('')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">{t('pages.announcements.resetFilter')}</button>}
 
         <button onClick={() => setIsCreateOpen(true)}
           className="ml-auto flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shrink-0">
-          <Plus size={14} />Создать объявление
+          <Plus size={14} />{t('pages.announcements.createBtn')}
         </button>
       </div>
 
@@ -111,7 +111,7 @@ const AnnouncementsPage = () => {
       ) : sorted.length === 0 ? (
         <div className="bg-white rounded-xl border border-zinc-200 py-20 text-center text-zinc-400">
           <span className="material-symbols-outlined text-4xl mb-2 block">campaign</span>
-          <p className="text-sm">Объявления не найдены</p>
+          <p className="text-sm">{t('pages.announcements.notFound')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">

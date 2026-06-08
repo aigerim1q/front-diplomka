@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axios from 'axios'
+import { useTranslation } from 'react-i18next'
 import Modal from '@/components/shared/Modal'
 import { newsApi } from '@/api/news'
 import { complexesApi } from '@/api/complexes'
@@ -46,6 +47,7 @@ const getErrorMessage = (err: unknown, fallback: string): string => {
 }
 
 const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdmin }: NewsFormModalProps) => {
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const isEdit = !!news
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -88,11 +90,11 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
     }, imageFile),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['news-manage'] })
-      toast.success('Объявление создано')
+      toast.success(t('newsForm.toast.created'))
       handleClose()
     },
     onError: (err: unknown) => {
-      toast.error(getErrorMessage(err, 'Ошибка при создании'))
+      toast.error(getErrorMessage(err, t('newsForm.toast.createError')))
     },
   })
 
@@ -108,11 +110,11 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['news-manage'] })
       queryClient.invalidateQueries({ queryKey: ['news-detail', news!.id] })
-      toast.success('Объявление обновлено')
+      toast.success(t('newsForm.toast.updated'))
       handleClose()
     },
     onError: (err: unknown) => {
-      toast.error(getErrorMessage(err, 'Ошибка при обновлении'))
+      toast.error(getErrorMessage(err, t('newsForm.toast.updateError')))
     },
   })
 
@@ -137,11 +139,11 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
 
   const onSubmit = (data: NewsForm) => {
     if ((isConstructionAdmin || isSeniorAdmin) && !isEdit && !data.targetComplexId) {
-      toast.error('Выберите жилой комплекс')
+      toast.error(t('newsForm.selectComplexError'))
       return
     }
     if (isConstructionAdmin && !isEdit && !data.targetKskTenantId) {
-      toast.error('Выберите жилой комплекс')
+      toast.error(t('newsForm.selectComplexError'))
       return
     }
     if (isEdit) updateNews(data)
@@ -150,13 +152,13 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
 
   const isPending = isCreating || isUpdating
   const errorMessage = createError
-    ? getErrorMessage(createError, 'Ошибка при сохранении. Проверьте данные.')
+    ? getErrorMessage(createError, t('newsForm.toast.saveError'))
     : updateError
-      ? getErrorMessage(updateError, 'Ошибка при сохранении. Проверьте данные.')
+      ? getErrorMessage(updateError, t('newsForm.toast.saveError'))
       : null
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={isEdit ? 'Редактировать объявление' : 'Создать объявление'} size="lg">
+    <Modal isOpen={isOpen} onClose={handleClose} title={isEdit ? t('newsForm.editTitle') : t('newsForm.createTitle')} size="lg">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-3 py-2 rounded-lg">
@@ -168,12 +170,12 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
         {(isConstructionAdmin || isSeniorAdmin) && !isEdit && (
           <div>
             <label className="block text-xs font-semibold text-zinc-600 mb-1">
-              Жилой комплекс <span className="text-red-400">*</span>
+              {t('newsForm.complex')} <span className="text-red-400">*</span>
             </label>
             {complexes.length === 0 ? (
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 text-sm">
                 <span className="material-symbols-outlined text-[18px]">warning</span>
-                Нет привязанных ЖК. Сначала привяжите КСК к ЖК.
+                {t('newsForm.noLinkedComplexes')}
               </div>
             ) : (
               <>
@@ -191,7 +193,7 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
                     }
                   }}
                 >
-                  <option value="">Выберите ЖК...</option>
+                  <option value="">{t('newsForm.selectComplex')}</option>
                   {complexes.map((cx) => (
                     <option key={cx.id} value={cx.id}>
                       {cx.name} — {cx.address}
@@ -210,7 +212,7 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
         {!isEdit && (
           <div>
             <label className="block text-xs font-semibold text-zinc-600 mb-1">
-              Фото <span className="text-zinc-400 font-normal">(необязательно, jpg/png, до 5 МБ)</span>
+              {t('newsForm.photo')} <span className="text-zinc-400 font-normal">({t('newsForm.photoHint')})</span>
             </label>
             {imagePreview ? (
               <div className="relative rounded-xl overflow-hidden border border-zinc-200 aspect-video">
@@ -226,7 +228,7 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
             ) : (
               <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-zinc-200 rounded-xl p-5 cursor-pointer hover:border-zinc-400 hover:bg-zinc-50 transition-all">
                 <span className="material-symbols-outlined text-3xl text-slate-300">add_photo_alternate</span>
-                <span className="text-sm text-zinc-400">Нажмите чтобы загрузить фото</span>
+                <span className="text-sm text-zinc-400">{t('newsForm.uploadPhoto')}</span>
                 <input
                   type="file"
                   accept="image/jpeg,image/png"
@@ -240,30 +242,30 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
 
         {/* Заголовок */}
         <div>
-          <label className="block text-xs font-semibold text-zinc-600 mb-1">Заголовок</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">{t('newsForm.fields.title')}</label>
           <input
             {...register('title')}
             className={inputClass(!!errors.title)}
-            placeholder="Плановое отключение воды"
+            placeholder={t('newsForm.placeholders.title')}
           />
           {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
         </div>
 
         {/* Содержание */}
         <div>
-          <label className="block text-xs font-semibold text-zinc-600 mb-1">Содержание</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">{t('newsForm.fields.content')}</label>
           <textarea
             {...register('content')}
             rows={4}
             className={inputClass(!!errors.content) + ' resize-none'}
-            placeholder="Уважаемые жильцы..."
+            placeholder={t('newsForm.placeholders.content')}
           />
           {errors.content && <p className="mt-1 text-xs text-red-500">{errors.content.message}</p>}
         </div>
 
         {/* Категория */}
         <div>
-          <label className="block text-xs font-semibold text-zinc-600 mb-1">Категория</label>
+          <label className="block text-xs font-semibold text-zinc-600 mb-1">{t('newsForm.fields.category')}</label>
           <select {...register('category')} className={inputClass(!!errors.category)}>
             {NEWS_CATEGORY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -275,7 +277,7 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
         {/* Даты */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-zinc-600 mb-1">Дата публикации</label>
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">{t('newsForm.fields.publishDate')}</label>
             <input
               {...register('publishDate')}
               type="datetime-local"
@@ -285,7 +287,7 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
           </div>
           <div>
             <label className="block text-xs font-semibold text-zinc-600 mb-1">
-              Дата окончания <span className="text-zinc-400 font-normal">(необязательно)</span>
+              {t('newsForm.fields.expirationDate')} <span className="text-zinc-400 font-normal">({t('tenants.descriptionOptional')})</span>
             </label>
             <input
               {...register('expirationDate')}
@@ -302,19 +304,19 @@ const NewsFormModal = ({ isOpen, onClose, news, isConstructionAdmin, isSeniorAdm
             type="checkbox"
             className="size-4 rounded border-slate-300 accent-zinc-900"
           />
-          <span className="text-sm text-zinc-700">Закрепить объявление</span>
+          <span className="text-sm text-zinc-700">{t('newsForm.pin')}</span>
         </label>
 
         <div className="flex gap-3 justify-end pt-2">
           <button type="button" onClick={handleClose}
             className="px-4 py-2 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-medium text-sm transition-colors">
-            Отмена
+            {t('common.cancel')}
           </button>
           <button
             type="submit"
             disabled={isPending || ((isConstructionAdmin || isSeniorAdmin) && !isEdit && complexes.length === 0)}
             className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium transition-colors disabled:opacity-50">
-            {isPending ? 'Сохранение...' : isEdit ? 'Сохранить' : 'Создать'}
+            {isPending ? t('common.saving') : isEdit ? t('common.save') : t('common.create')}
           </button>
         </div>
       </form>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { tenantsApi } from '@/api/tenants'
 import { TenantType } from '@/types'
 import TenantsTable from './components/TenantsTable'
@@ -9,6 +10,7 @@ import AddTenantModal from './components/modals/AddTenantModal'
 const PAGE_SIZE = 10
 
 const TenantsPage = () => {
+  const { t } = useTranslation()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [type, setType] = useState('')
@@ -48,7 +50,7 @@ const TenantsPage = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
-            placeholder="Поиск по названию..."
+            placeholder={t('tenants.searchPlaceholder')}
           />
         </div>
         <select
@@ -56,25 +58,25 @@ const TenantsPage = () => {
           onChange={(e) => { setType(e.target.value); setPage(1) }}
           className="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm w-48"
         >
-          <option value="">Все типы</option>
-          <option value="1">Строительная компания</option>
-          <option value="2">КСК</option>
-          <option value="3">Бизнес</option>
+          <option value="">{t('common.allTypes')}</option>
+          <option value="1">{t('tenants.types.constructionCompany')}</option>
+          <option value="2">{t('tenants.types.ksk')}</option>
+          <option value="3">{t('tenants.types.business')}</option>
         </select>
         <button
           onClick={() => { setSearch(''); setType(''); setPage(1) }}
           className="px-4 py-2 text-slate-600 font-medium text-sm hover:text-primary transition-colors"
         >
-          Сбросить
+          {t('tenants.reset')}
         </button>
       </div>
 
       {/* Статистика */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: 'Всего организаций', value: totalCount, icon: 'domain', color: 'text-primary bg-primary/10' },
-          { label: 'Строительных компаний', value: allTenants.filter(t => t.type === 1 || (t.type as unknown) === 'ConstructionCompany').length, icon: 'construction', color: 'text-purple-600 bg-purple-100' },
-          { label: 'КСК', value: allTenants.filter(t => t.type === 2 || (t.type as unknown) === 'KSK').length, icon: 'location_city', color: 'text-blue-600 bg-blue-100' },
+          { label: t('tenants.totalTenants'), value: totalCount, icon: 'domain', color: 'text-primary bg-primary/10' },
+          { label: t('tenants.constructionCompanies'), value: allTenants.filter(t => t.type === 1 || (t.type as unknown) === 'ConstructionCompany').length, icon: 'construction', color: 'text-purple-600 bg-purple-100' },
+          { label: t('tenants.kskCount'), value: allTenants.filter(t => t.type === 2 || (t.type as unknown) === 'KSK').length, icon: 'location_city', color: 'text-blue-600 bg-blue-100' },
         ].map((stat) => (
           <div key={stat.label} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex items-center gap-4">
             <div className={`p-3 rounded-lg ${stat.color}`}>

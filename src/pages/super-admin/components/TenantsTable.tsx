@@ -1,12 +1,13 @@
+import { useTranslation } from 'react-i18next'
 import { Tenant } from '@/types'
 
-const TYPE_BADGE: Record<string, { label: string; class: string }> = {
-  1: { label: 'Строительная компания', class: 'bg-purple-100 text-purple-800' },
-  2: { label: 'КСК', class: 'bg-blue-100 text-blue-800' },
-  3: { label: 'Бизнес', class: 'bg-amber-100 text-amber-800' },
-  'ConstructionCompany': { label: 'Строительная компания', class: 'bg-purple-100 text-purple-800' },
-  'KSK': { label: 'КСК', class: 'bg-blue-100 text-blue-800' },
-  'Business': { label: 'Бизнес', class: 'bg-amber-100 text-amber-800' },
+const TYPE_BADGE: Record<string, { labelKey: string; class: string }> = {
+  1: { labelKey: 'tenants.types.constructionCompany', class: 'bg-purple-100 text-purple-800' },
+  2: { labelKey: 'tenants.types.ksk', class: 'bg-blue-100 text-blue-800' },
+  3: { labelKey: 'tenants.types.business', class: 'bg-amber-100 text-amber-800' },
+  'ConstructionCompany': { labelKey: 'tenants.types.constructionCompany', class: 'bg-purple-100 text-purple-800' },
+  'KSK': { labelKey: 'tenants.types.ksk', class: 'bg-blue-100 text-blue-800' },
+  'Business': { labelKey: 'tenants.types.business', class: 'bg-amber-100 text-amber-800' },
 }
 
 const TYPE_ICON: Record<string, string> = {
@@ -22,12 +23,15 @@ interface TenantsTableProps {
   tenants: Tenant[]
 }
 
-const TenantsTable = ({ tenants }: TenantsTableProps) => (
-  <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+const TenantsTable = ({ tenants }: TenantsTableProps) => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
     <table className="w-full text-left border-collapse">
       <thead>
         <tr className="bg-slate-50 border-b border-slate-200">
-          {['Название', 'Тип', 'Описание', 'Статус', 'Дата создания'].map((col) => (
+          {[t('tenants.name'), t('tenants.type'), t('tenants.description'), t('common.status'), t('common.createdAt')].map((col) => (
             <th key={col} className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
               {col}
             </th>
@@ -36,7 +40,8 @@ const TenantsTable = ({ tenants }: TenantsTableProps) => (
       </thead>
       <tbody className="divide-y divide-slate-100">
         {tenants.map((tenant) => {
-          const badge = TYPE_BADGE[tenant.type] ?? { label: String(tenant.type), class: 'bg-slate-100 text-slate-800' }
+          const badge = TYPE_BADGE[tenant.type]
+          const badgeClass = badge?.class ?? 'bg-slate-100 text-slate-800'
           const icon = TYPE_ICON[tenant.type] ?? 'domain'
           return (
             <tr key={tenant.id} className="hover:bg-slate-50/50 transition-colors">
@@ -49,8 +54,8 @@ const TenantsTable = ({ tenants }: TenantsTableProps) => (
                 </div>
               </td>
               <td className="px-6 py-4">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badge.class}`}>
-                  {badge.label}
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass}`}>
+                  {badge ? t(badge.labelKey) : String(tenant.type)}
                 </span>
               </td>
               <td className="px-6 py-4 text-sm text-slate-500 max-w-xs truncate">
@@ -61,7 +66,7 @@ const TenantsTable = ({ tenants }: TenantsTableProps) => (
                   tenant.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
                   <span className={`size-1.5 rounded-full ${tenant.isActive ? 'bg-green-500' : 'bg-red-500'}`} />
-                  {tenant.isActive ? 'Активен' : 'Неактивен'}
+                  {tenant.isActive ? t('common.active') : t('common.inactive')}
                 </span>
               </td>
               <td className="px-6 py-4 text-sm text-slate-500">
@@ -76,10 +81,11 @@ const TenantsTable = ({ tenants }: TenantsTableProps) => (
     {tenants.length === 0 && (
       <div className="text-center py-16 text-slate-400">
         <span className="material-symbols-outlined text-5xl mb-3 block">domain</span>
-        <p className="font-medium">Организации не найдены</p>
+        <p className="font-medium">{t('tenants.notFound')}</p>
       </div>
     )}
   </div>
-)
+  )
+}
 
 export default TenantsTable

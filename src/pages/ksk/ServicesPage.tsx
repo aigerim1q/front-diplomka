@@ -40,14 +40,14 @@ const ServicesPage = () => {
 
   const { mutate: toggleActive } = useMutation({
     mutationFn: (id: string) => kskServicesApi.toggleActive(id),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ksk-services'] }); toast.success('Статус обновлён') },
-    onError: () => toast.error('Не удалось изменить статус'),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ksk-services'] }); toast.success(t('services.toast.toggled')) },
+    onError: () => toast.error(t('services.toast.toggleFailed')),
   })
 
   const { mutate: deleteSvc, isPending: isDeleting } = useMutation({
     mutationFn: (id: string) => kskServicesApi.delete(id),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ksk-services'] }); toast.success('Сервис удалён'); setDeleteService(null) },
-    onError: () => toast.error('Не удалось удалить'),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ksk-services'] }); toast.success(t('services.toast.deleted')); setDeleteService(null) },
+    onError: () => toast.error(t('services.toast.deleteFailed')),
   })
 
   const allServices = data?.data.items ?? []
@@ -130,7 +130,7 @@ const ServicesPage = () => {
                   )}
                   {inactive && (
                     <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-zinc-900/60 text-white text-[10px] font-medium">
-                      Неактивен
+                      {t('common.inactive')}
                     </span>
                   )}
                 </div>
@@ -153,17 +153,17 @@ const ServicesPage = () => {
 
                 {/* Actions */}
                 <div className="px-3.5 py-2.5 flex items-center justify-end gap-0.5">
-                  <button onClick={() => setEditServiceId(service.id)} title="Редактировать"
+                  <button onClick={() => setEditServiceId(service.id)} title={t('common.edit')}
                     className="size-7 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors">
                     <Edit size={13} />
                   </button>
-                  <button onClick={() => toggleActive(service.id)} title={inactive ? 'Активировать' : 'Деактивировать'}
+                  <button onClick={() => toggleActive(service.id)} title={inactive ? t('complexes.activate') : t('complexes.deactivate')}
                     className={`size-7 flex items-center justify-center rounded-md transition-colors ${
                       inactive ? 'text-zinc-300 hover:text-emerald-500 hover:bg-emerald-50' : 'text-zinc-400 hover:text-amber-500 hover:bg-amber-50'
                     }`}>
                     <Power size={13} />
                   </button>
-                  <button onClick={() => setDeleteService(service)} title="Удалить"
+                  <button onClick={() => setDeleteService(service)} title={t('common.delete')}
                     className="size-7 flex items-center justify-center rounded-md text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-colors">
                     <Trash2 size={13} />
                   </button>

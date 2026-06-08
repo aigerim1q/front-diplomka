@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Plus, ChevronRight } from 'lucide-react'
 import { votingsApi } from '@/api/votings'
 import {
@@ -10,14 +11,14 @@ import {
 import CreateVotingModal from '@/pages/ksk/components/modals/CreateVotingModal'
 import VotingDetailModal from '@/pages/ksk/components/modals/VotingDetailModal'
 
-const TABS: { key: 'all' | VotingStatus; label: string }[] = [
-  { key: 'all', label: 'Все' },
-  { key: 1,     label: 'Черновики' },
-  { key: 2,     label: 'Активные' },
-  { key: 3,     label: 'Завершённые' },
-]
-
 const ConstructionPollsPage = () => {
+  const { t } = useTranslation()
+  const TABS: { key: 'all' | VotingStatus; label: string }[] = [
+    { key: 'all', label: t('pages.polls.tabAll') },
+    { key: 1, label: t('pages.polls.tabDrafts') },
+    { key: 2, label: t('pages.polls.tabActive') },
+    { key: 3, label: t('pages.polls.tabCompleted') },
+  ]
   const [tab, setTab]                     = useState<'all' | VotingStatus>('all')
   const [isCreateOpen, setIsCreateOpen]   = useState(false)
   const [selectedVotingId, setSelectedVotingId] = useState<string | null>(null)
@@ -60,7 +61,7 @@ const ConstructionPollsPage = () => {
           className="ml-auto flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
         >
           <Plus size={14} />
-          Создать опрос
+          {t('pages.polls.createBtn')}
         </button>
       </div>
 
@@ -80,13 +81,13 @@ const ConstructionPollsPage = () => {
       ) : votings.length === 0 ? (
         <div className="bg-white rounded-xl border border-zinc-200 py-20 text-center text-zinc-400">
           <span className="material-symbols-outlined text-4xl mb-2 block">poll</span>
-          <p className="text-sm font-medium">Опросы не найдены</p>
+          <p className="text-sm font-medium">{t('pages.polls.notFound')}</p>
           <button
             onClick={() => setIsCreateOpen(true)}
             className="mt-4 inline-flex items-center gap-1.5 bg-zinc-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 transition-colors"
           >
             <Plus size={13} />
-            Создать первый опрос
+            {t('pages.polls.createFirst')}
           </button>
         </div>
       ) : (
@@ -113,7 +114,7 @@ const ConstructionPollsPage = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-zinc-400">
-                  <span className="text-xs">{voting.optionsCount} вариантов</span>
+                  <span className="text-xs">{t('pages.polls.optionsCount', { count: voting.optionsCount })}</span>
                   <ChevronRight size={14} className="group-hover:text-zinc-600 transition-colors" />
                 </div>
               </li>
