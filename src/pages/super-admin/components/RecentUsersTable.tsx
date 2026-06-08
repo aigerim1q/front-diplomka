@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { User } from '@/types'
 import { useRole } from '@/hooks/useRole'
 
@@ -16,24 +17,25 @@ const ROLE_BADGE: Record<number, string> = {
 
 const RecentUsersTable = ({ users }: RecentUsersTableProps) => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { getRoleName } = useRole()
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
-        <h3 className="text-lg font-bold">Recent Users</h3>
+        <h3 className="text-lg font-bold">{t('dashboard.recentUsers')}</h3>
         <button
           onClick={() => navigate('/users')}
           className="text-primary text-sm font-semibold hover:underline"
         >
-          View All Users
+          {t('dashboard.viewAll')}
         </button>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead className="bg-slate-50">
             <tr>
-              {['Name', 'Email', 'Role', 'Status', 'Date Joined'].map((col) => (
+              {[t('users.name'), t('users.email'), t('users.role'), t('common.status'), t('common.createdAt')].map((col) => (
                 <th
                   key={col}
                   className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500"
@@ -68,7 +70,7 @@ const RecentUsersTable = ({ users }: RecentUsersTableProps) => {
                       ? 'bg-emerald-100 text-emerald-700'
                       : 'bg-red-100 text-red-700'
                   }`}>
-                    {user.status === 1 ? 'Active' : 'Blocked'}
+                    {user.status === 1 ? t('common.active') : t('common.blocked')}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-500">
@@ -82,7 +84,7 @@ const RecentUsersTable = ({ users }: RecentUsersTableProps) => {
         {users.length === 0 && (
           <div className="text-center py-12 text-slate-400">
             <span className="material-symbols-outlined text-4xl mb-2 block">group</span>
-            <p>Нет пользователей</p>
+            <p>{t('users.notFound')}</p>
           </div>
         )}
       </div>

@@ -1,45 +1,48 @@
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { usersApi } from '@/api/users'
 import { tenantsApi } from '@/api/tenants'
 import StatCard from '@/components/shared/StatCard'
 import RecentUsersTable from './components/RecentUsersTable'
 
-const STAT_CARDS = [
-  {
-    key: 'complexes',
-    icon: 'location_city',
-    iconBg: 'bg-primary/10',
-    iconColor: 'text-primary',
-    label: 'Total Tenants',
-    trend: '+12%',
-  },
-  {
-    key: 'users',
-    icon: 'person',
-    iconBg: 'bg-blue-500/10',
-    iconColor: 'text-blue-500',
-    label: 'Total Users',
-    trend: '+5%',
-  },
-  {
-    key: 'activeUsers',
-    icon: 'how_to_reg',
-    iconBg: 'bg-emerald-500/10',
-    iconColor: 'text-emerald-500',
-    label: 'Active Users',
-    trend: '+8%',
-  },
-  {
-    key: 'blocked',
-    icon: 'block',
-    iconBg: 'bg-red-500/10',
-    iconColor: 'text-red-500',
-    label: 'Blocked Users',
-    trend: '0%',
-  },
-]
-
 const DashboardPage = () => {
+  const { t } = useTranslation()
+
+  const STAT_CARDS = [
+    {
+      key: 'complexes',
+      icon: 'location_city',
+      iconBg: 'bg-primary/10',
+      iconColor: 'text-primary',
+      label: t('dashboard.totalTenants'),
+      trend: '+12%',
+    },
+    {
+      key: 'users',
+      icon: 'person',
+      iconBg: 'bg-blue-500/10',
+      iconColor: 'text-blue-500',
+      label: t('dashboard.totalUsers'),
+      trend: '+5%',
+    },
+    {
+      key: 'activeUsers',
+      icon: 'how_to_reg',
+      iconBg: 'bg-emerald-500/10',
+      iconColor: 'text-emerald-500',
+      label: t('dashboard.activeUsers'),
+      trend: '+8%',
+    },
+    {
+      key: 'blocked',
+      icon: 'block',
+      iconBg: 'bg-red-500/10',
+      iconColor: 'text-red-500',
+      label: t('dashboard.blockedUsers'),
+      trend: '0%',
+    },
+  ]
+
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ['users', 'dashboard'],
     queryFn: () => usersApi.getAll({ page: 1, pageSize: 5 }),
