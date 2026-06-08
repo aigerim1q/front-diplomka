@@ -44,6 +44,7 @@ const parseJwt = (token: string): AuthUser => {
     role: role as UserRole,
     tenantId: decoded.tenantId,
     complexId: decoded.complexId,
+    complexName: decoded.complexName ?? decoded.residentialComplexName ?? decoded.ResidentialComplexName,
     mustChangePassword: false,
   }
 }

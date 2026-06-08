@@ -38,4 +38,5 @@ export interface AuthUser {
   tenantId?: string
   mustChangePassword: boolean
   complexId?: string
+  complexName?: string
 }

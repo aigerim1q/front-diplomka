@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { Search, Plus } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
-import { kskTeamApi } from '@/api/kskTeam'
+import { complexesApi } from '@/api/complexes'
 import LanguageSwitcher from '@/components/shared/LanguageSwitcher'
 import NotificationsBell from '@/components/shared/NotificationsBell'
 
@@ -11,10 +11,10 @@ const Header = () => {
   const location = useLocation()
   const { t } = useTranslation()
   const { user, isKskAdmin } = useAuth()
-  const { data: complexesRes } = useQuery({
-    queryKey: ['header-ksk-complexes'],
-    queryFn: kskTeamApi.getComplexes,
-    enabled: isKskAdmin && !!user?.complexId,
+  const { data: currentComplexRes } = useQuery({
+    queryKey: ['header-ksk-complex', user?.complexId],
+    queryFn: () => complexesApi.getById(user!.complexId!),
+    enabled: isKskAdmin && !!user?.complexId && !user?.complexName,
   })
 
   const ADD_BUTTONS: Record<string, string> = {
@@ -48,16 +48,16 @@ const Header = () => {
   const title = PAGE_TITLES[location.pathname] ?? 'MyHome'
   const addLabel = ADD_BUTTONS[location.pathname]
   const showSearch = location.pathname !== '/complexes'
-  const currentComplex = complexesRes?.data.items.find((complex) => complex.id === user?.complexId)
+  const currentComplexName = user?.complexName ?? currentComplexRes?.data.name
 
   return (
     <header className="h-14 bg-white border-b border-zinc-200 flex items-center justify-between px-6 sticky top-0 z-40">
       <div className="flex items-center gap-2">
         <h2 className="text-sm font-semibold text-zinc-900">{title}</h2>
-        {isKskAdmin && user?.complexId && (
+        {isKskAdmin && currentComplexName && (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-500 text-xs font-medium">
             <span className="material-symbols-outlined text-[13px]">apartment</span>
-            {currentComplex ? `ЖК ${currentComplex.name}` : 'ЖК'}
+            ЖК {currentComplexName}
           </span>
         )}
       </div>
