@@ -48,12 +48,14 @@ const AnnouncementsPage = () => {
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['news-manage', tab],
-    queryFn: () => newsApi.getManage({ status: tab !== 'all' ? (tab as NewsStatus) : undefined }),
+    queryKey: ['news-manage'],
+    queryFn: () => newsApi.getManage({}),
   })
 
   const allNews = data?.data ?? []
-  const news    = cat ? allNews.filter(n => n.category === Number(cat)) : allNews
+
+  const tabFiltered = tab === 'all' ? allNews : allNews.filter(n => n.status === (tab as number))
+  const news = cat ? tabFiltered.filter(n => n.category === Number(cat)) : tabFiltered
 
   const tabCounts = {
     all: allNews.length,
