@@ -16,6 +16,12 @@ interface LoginFormProps {
   serverError: string | null
 }
 
+const DEMO_ACCOUNTS = [
+  { label: 'КСК Админ', email: 'nugmanmyrzabek8@gmail.com', password: 'Qwerty.2026' },
+  { label: 'Застройщик', email: 'nugmanmyrzabek@gmail.com', password: 'Qwerty.2026' },
+  { label: 'Супер Админ', email: 'superadmin@housing.kz', password: 'SuperAdmin123!' },
+]
+
 const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
   const { t } = useTranslation()
 
@@ -106,6 +112,25 @@ const LoginForm = ({ onSubmit, serverError }: LoginFormProps) => {
         >
           {isSubmitting ? t('auth.signingIn') : t('auth.signIn')}
         </button>
+
+        {/* Демо-аккаунты */}
+        <div className="pt-2 border-t border-zinc-100">
+          <p className="text-xs font-medium text-zinc-400 mb-3 text-center uppercase tracking-wide">Демо-доступ</p>
+          <div className="flex flex-col gap-2">
+            {DEMO_ACCOUNTS.map((acc) => (
+              <button
+                key={acc.label}
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => onSubmit({ email: acc.email, password: acc.password })}
+                className="w-full flex items-center justify-between py-2.5 px-4 rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 hover:border-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="text-sm font-semibold text-zinc-800">{acc.label}</span>
+                <span className="text-xs text-zinc-400">{acc.email}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
       </form>
     </section>
