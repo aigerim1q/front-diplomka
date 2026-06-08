@@ -1,7 +1,9 @@
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import { Search, Plus } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { kskTeamApi } from '@/api/kskTeam'
 import LanguageSwitcher from '@/components/shared/LanguageSwitcher'
 import NotificationsBell from '@/components/shared/NotificationsBell'
 
@@ -9,6 +11,11 @@ const Header = () => {
   const location = useLocation()
   const { t } = useTranslation()
   const { user, isKskAdmin } = useAuth()
+  const { data: complexesRes } = useQuery({
+    queryKey: ['header-ksk-complexes'],
+    queryFn: kskTeamApi.getComplexes,
+    enabled: isKskAdmin && !!user?.complexId,
+  })
 
   const ADD_BUTTONS: Record<string, string> = {
     '/users': t('users.addUser'),
@@ -41,6 +48,7 @@ const Header = () => {
   const title = PAGE_TITLES[location.pathname] ?? 'MyHome'
   const addLabel = ADD_BUTTONS[location.pathname]
   const showSearch = location.pathname !== '/complexes'
+  const currentComplex = complexesRes?.data.items.find((complex) => complex.id === user?.complexId)
 
   return (
     <header className="h-14 bg-white border-b border-zinc-200 flex items-center justify-between px-6 sticky top-0 z-40">
@@ -49,7 +57,7 @@ const Header = () => {
         {isKskAdmin && user?.complexId && (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-500 text-xs font-medium">
             <span className="material-symbols-outlined text-[13px]">apartment</span>
-            ЖК #{user.complexId.slice(0, 8)}
+            {currentComplex ? `ЖК ${currentComplex.name}` : 'ЖК'}
           </span>
         )}
       </div>
