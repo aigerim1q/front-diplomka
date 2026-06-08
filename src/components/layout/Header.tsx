@@ -13,7 +13,6 @@ const Header = () => {
   const ADD_BUTTONS: Record<string, string> = {
     '/users': t('users.addUser'),
     '/tenants': t('tenants.addTenant'),
-    '/complexes': t('complexes.addComplex'),
     '/construction-polls': t('polls.createPoll'),
     '/polls': t('polls.createPoll'),
   }
@@ -41,6 +40,7 @@ const Header = () => {
 
   const title = PAGE_TITLES[location.pathname] ?? 'MyHome'
   const addLabel = ADD_BUTTONS[location.pathname]
+  const showSearch = location.pathname !== '/complexes'
 
   return (
     <header className="h-14 bg-white border-b border-zinc-200 flex items-center justify-between px-6 sticky top-0 z-40">
@@ -54,14 +54,16 @@ const Header = () => {
         )}
       </div>
       <div className="flex items-center gap-2">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" size={14} />
-          <input
-            className="pl-8 pr-3 py-1.5 bg-zinc-100 rounded-lg text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 w-52 transition-all"
-            placeholder={t('common.search')}
-            type="text"
-          />
-        </div>
+        {showSearch && (
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" size={14} />
+            <input
+              className="pl-8 pr-3 py-1.5 bg-zinc-100 rounded-lg text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 w-52 transition-all"
+              placeholder={t('common.search')}
+              type="text"
+            />
+          </div>
+        )}
         <NotificationsBell />
         <LanguageSwitcher />
         {addLabel && (
