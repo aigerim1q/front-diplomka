@@ -140,6 +140,8 @@ export default {
     region: 'Аймақ',
     description: 'Сипаттама',
     searchPlaceholder: 'Атауы бойынша іздеу...',
+    linkedCount: 'ТҮК сіздің КСК-ға байланыстырылған',
+    noLinked: 'Байланыстырылған тұрғын үй кешені жоқ',
     linkKsk: 'КСК байланыстыру',
     activate: 'Белсендіру',
     deactivate: 'Белсенділікті тоқтату',

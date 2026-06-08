@@ -2,6 +2,13 @@ import { api } from '@/lib/axios'
 import { PaginatedResponse } from '@/types/user'
 import { Complex } from '@/types'
 
+export interface KskComplexDto {
+  id: string
+  name: string
+  address: string
+  city: string
+}
+
 export interface TeamMember {
   id: string
   fullName: string
@@ -38,4 +45,7 @@ export const kskTeamApi = {
     api.get<PaginatedResponse<Complex>>('/api/construction-company/residential-complexes', {
       params: { pageSize: 100 },
     }),
+
+  getLinkedComplexes: () =>
+    api.get<KskComplexDto[]>('/api/ksk/team/complexes'),
 }

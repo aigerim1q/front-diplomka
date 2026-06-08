@@ -49,28 +49,10 @@ const KSK_NAV: NavItem[][] = [
   ],
 ]
 
-// KskSeniorAdmin: same as KSK but +team section, no chat lounge (no complexId)
-const KSK_SENIOR_NAV: NavItem[][] = [
-  [
-    { labelKey: 'nav.dashboard', icon: LayoutDashboard, to: '/ksk-dashboard' },
-    { labelKey: 'nav.requests',  icon: ClipboardList,   to: '/requests' },
-    { labelKey: 'nav.residents', icon: Users,           to: '/residents' },
-    { labelKey: 'nav.workers',   icon: HardHat,         to: '/workers' },
-  ],
-  [
-    { labelKey: 'nav.announcements', icon: Megaphone,   to: '/announcements' },
-    { labelKey: 'nav.polls',         icon: BarChart2,   to: '/polls' },
-    { labelKey: 'nav.classifieds',   icon: ShoppingBag, to: '/classifieds' },
-  ],
-  [
-    { labelKey: 'nav.services',  icon: Briefcase,    to: '/services' },
-    { labelKey: 'nav.contacts',  icon: BookUser,     to: '/contacts' },
-    { labelKey: 'nav.reports',   icon: ReceiptText,  to: '/reports' },
-  ],
-  [
-    { labelKey: 'nav.team', icon: UserCog, to: '/team' },
-  ],
-]
+const KSK_SENIOR_NAV: NavItem[][] = [[
+  { labelKey: 'nav.complexes', icon: Building2, to: '/ksk-complexes' },
+  { labelKey: 'nav.team',      icon: UserCog,   to: '/team' },
+]]
 
 const ROLE_NAV: Record<number, NavItem[][]> = {
   1: SUPER_ADMIN_NAV,

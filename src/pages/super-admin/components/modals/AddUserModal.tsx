@@ -36,9 +36,13 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps) => {
   const [copied, setCopied] = useState(false)
   const roles = [
     { value: 2, label: t('users.roles.constructionAdmin') },
-    { value: 3, label: t('users.roles.kskAdmin') },
+    { value: 7, label: t('users.roles.kskSeniorAdmin') },
     { value: 4, label: t('users.roles.businessAdmin') },
   ]
+
+  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<AddUserForm>({
+    resolver: zodResolver(schema),
+  })
 
   const { data: tenantsData } = useQuery({
     queryKey: ['tenants'],
@@ -46,9 +50,12 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps) => {
     enabled: isOpen,
   })
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<AddUserForm>({
-    resolver: zodResolver(schema),
-  })
+  const selectedRole = Number(watch('role'))
+  const roleTenantType: Record<number, number> = { 2: 1, 7: 2, 4: 3 }
+  const allTenants = tenantsData?.data.items ?? []
+  const filteredTenants = selectedRole
+    ? allTenants.filter(t => t.type === roleTenantType[selectedRole])
+    : allTenants
 
   const { mutate, isPending, error: serverError } = useMutation({
     mutationFn: usersApi.create,
@@ -160,7 +167,7 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps) => {
 
         <div>
           <label className="block text-xs font-semibold text-slate-600 mb-1">{t('users.role')}</label>
-          <select {...register('role')} className={inputClass(!!errors.role)}>
+          <select {...register('role')} onChange={e => { register('role').onChange(e); setValue('tenantId', '') }} className={inputClass(!!errors.role)}>
             <option value="">{t('users.selectRole')}</option>
             {roles.map((r) => (
               <option key={r.value} value={r.value}>{r.label}</option>
@@ -173,7 +180,7 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps) => {
           <label className="block text-xs font-semibold text-slate-600 mb-1">{t('users.organization')}</label>
           <select {...register('tenantId')} className={inputClass(!!errors.tenantId)}>
             <option value="">{t('users.selectTenant')}</option>
-            {tenantsData?.data.items.map((t) => (
+            {filteredTenants.map((t) => (
               <option key={t.id} value={t.id}>{t.name}</option>
             ))}
           </select>

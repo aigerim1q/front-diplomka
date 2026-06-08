@@ -15,8 +15,10 @@ const inputClass = (err?: boolean) =>
 const getErr = (e: unknown, fb: string) => {
   if (axios.isAxiosError(e)) {
     const code = e.response?.data?.errorCode
-    if (code === 'DUPLICATE_EMAIL') return 'Email уже используется'
-    if (code === 'ADMIN_NOT_FOUND')  return 'Администратор не найден'
+    if (code === 'DUPLICATE_EMAIL')          return 'Email уже используется'
+    if (code === 'ADMIN_NOT_FOUND')          return 'Администратор не найден'
+    if (code === 'COMPLEX_NOT_LINKED')       return 'Этот ЖК не привязан к вашему КСК'
+    if (code === 'COMPLEX_ALREADY_ASSIGNED') return 'К этому ЖК уже привязан администратор'
     return e.response?.data?.message ?? fb
   }
   return fb
@@ -37,9 +39,9 @@ const TeamPage = () => {
 
   const { data: complexesRes } = useQuery({
     queryKey: ['ksk-complexes'],
-    queryFn: kskTeamApi.getComplexes,
+    queryFn: kskTeamApi.getLinkedComplexes,
   })
-  const complexes = (complexesRes?.data?.items ?? []).filter(c => c.isActive)
+  const complexes = complexesRes?.data ?? []
 
   const complexName = (id: string | null) => {
     if (!id) return null

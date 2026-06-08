@@ -140,6 +140,8 @@ export default {
     region: 'Регион',
     description: 'Описание',
     searchPlaceholder: 'Поиск по названию...',
+    linkedCount: 'ЖК привязано к вашему КСК',
+    noLinked: 'Нет привязанных жилых комплексов',
     linkKsk: 'Привязать КСК',
     activate: 'Активировать',
     deactivate: 'Деактивировать',

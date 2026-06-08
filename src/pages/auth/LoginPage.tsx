@@ -27,7 +27,7 @@ const ROLE_ROUTES: Record<number, string> = {
   4: '/dashboard',
   5: '/dashboard',
   6: '/dashboard',
-  7: '/team',
+  7: '/ksk-complexes',
 }
 
 // Ключ роли в JWT от .NET Identity

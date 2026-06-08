@@ -28,6 +28,7 @@ import ServicesPage from '@/pages/ksk/ServicesPage'
 import ClassifiedsPage from '@/pages/ksk/ClassifiedsPage'
 import ChatPage from '@/pages/ksk/ChatPage'
 import TeamPage from '@/pages/ksk/TeamPage'
+import KskComplexesPage from '@/pages/ksk/KskComplexesPage'
 import ContactsPage from '@/pages/ksk/ContactsPage'
 import ReportsPage from '@/pages/ksk/ReportsPage'
 
@@ -109,17 +110,8 @@ export const router = createBrowserRouter([
       {
         element: <DashboardLayout />,
         children: [
+          { path: '/ksk-complexes', element: <KskComplexesPage /> },
           { path: '/team',          element: <TeamPage /> },
-          { path: '/ksk-dashboard', element: <KskDashboardPage /> },
-          { path: '/residents',     element: <ResidentsPage /> },
-          { path: '/workers',       element: <WorkersPage /> },
-          { path: '/requests',      element: <RequestsPage /> },
-          { path: '/announcements', element: <AnnouncementsPage /> },
-          { path: '/polls',         element: <PollsPage /> },
-          { path: '/services',      element: <ServicesPage /> },
-          { path: '/classifieds',   element: <ClassifiedsPage /> },
-          { path: '/contacts',      element: <ContactsPage /> },
-          { path: '/reports',       element: <ReportsPage /> },
         ],
       },
     ],
