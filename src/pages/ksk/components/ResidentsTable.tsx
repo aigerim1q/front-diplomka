@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Resident } from '@/types'
 
 interface ResidentsTableProps {
@@ -15,12 +16,13 @@ const ResidentsTable = ({
   onEdit,
   onResetPassword,
 }: ResidentsTableProps) => {
+  const { t } = useTranslation()
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="bg-slate-50 border-b border-slate-200">
-            {['Жилец', 'Email', 'Телефон', 'Квартира', 'Дата регистрации', 'Статус', 'Действия'].map((col) => (
+            {[t('residents.colResident'), 'Email', t('residents.phone'), t('residents.colApartment'), t('residents.colRegDate'), t('common.status'), t('common.actions')].map((col) => (
               <th
                 key={col}
                 className={`px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider ${col === 'Действия' ? 'text-right' : ''}`}
@@ -96,7 +98,7 @@ const ResidentsTable = ({
                       : 'bg-[#065F46]/10 text-[#065F46]'
                   }`}>
                     <span className={`size-1.5 rounded-full ${isBlocked ? 'bg-slate-400' : 'bg-[#065F46]'}`} />
-                    {isBlocked ? 'Заблокирован' : 'Активен'}
+                    {isBlocked ? t('common.blocked') : t('common.active')}
                   </span>
                 </td>
 
@@ -150,7 +152,7 @@ const ResidentsTable = ({
       {residents.length === 0 && (
         <div className="text-center py-16 text-slate-400">
           <span className="material-symbols-outlined text-5xl mb-3 block">group</span>
-          <p className="font-medium">Жильцы не найдены</p>
+          <p className="font-medium">{t('residents.empty') ?? 'Жильцы не найдены'}</p>
         </div>
       )}
     </div>

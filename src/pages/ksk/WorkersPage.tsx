@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -9,6 +10,7 @@ import ConfirmActionModal from '@/pages/super-admin/components/modals/ConfirmAct
 
 const WorkersPage = () => {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   const [tab, setTab] = useState<'all' | 'active' | 'inactive'>('all')
   const [specializationFilter, setSpecializationFilter] = useState('')
@@ -37,7 +39,7 @@ const WorkersPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ksk-workers'] })
       setConfirmDeactivate(null)
-      toast.success('Работник деактивирован')
+      toast.success(t('workers.deactivated_toast'))
     },
   })
 
@@ -56,9 +58,9 @@ const WorkersPage = () => {
       {/* Табы */}
       <div className="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm w-fit">
         {([
-          { key: 'all', label: 'Все', count: allWorkers.length },
-          { key: 'active', label: 'Активные', count: activeCount },
-          { key: 'inactive', label: 'Неактивные', count: inactiveCount },
+          { key: 'all', label: t('workers.tabAll'), count: allWorkers.length },
+          { key: 'active', label: t('workers.tabActive'), count: activeCount },
+          { key: 'inactive', label: t('workers.tabInactive'), count: inactiveCount },
         ] as const).map(({ key, label, count }) => (
           <button
             key={key}
@@ -86,7 +88,7 @@ const WorkersPage = () => {
           onChange={(e) => setSpecializationFilter(e.target.value)}
           className="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm w-56"
         >
-          <option value="">Все специализации</option>
+          <option value="">{t('workers.allSpecializations')}</option>
           {SPECIALIZATION_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
@@ -95,7 +97,7 @@ const WorkersPage = () => {
           onClick={() => setSpecializationFilter('')}
           className="px-4 py-2 text-slate-600 font-medium text-sm hover:text-primary transition-colors"
         >
-          Сбросить
+          {t('workers.reset')}
         </button>
       </div>
 
@@ -109,7 +111,7 @@ const WorkersPage = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                {['Работник', 'Телефон', 'Специализация', 'Статус занятости', 'Статус', 'Дата добавления', 'Действия'].map((col) => (
+                {[t('workers.colWorker'), t('workers.colPhone'), t('workers.colSpecialization'), t('workers.colAvailability'), t('workers.colStatus'), t('workers.colDateAdded'), t('workers.colActions')].map((col) => (
                   <th
                     key={col}
                     className={`px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider ${col === 'Действия' ? 'text-right' : ''}`}
@@ -164,7 +166,7 @@ const WorkersPage = () => {
                         }`}
                       >
                         <span className={`size-1.5 rounded-full ${isBusy ? 'bg-amber-500' : 'bg-emerald-500'}`} />
-                        {worker.availabilityLabel || (isBusy ? 'Занят' : 'Свободен')}
+                        {worker.availabilityLabel || (isBusy ? t('workers.busy') : t('workers.free'))}
                       </span>
                     </td>
 
@@ -176,7 +178,7 @@ const WorkersPage = () => {
                           : 'bg-primary/10 text-primary'
                       }`}>
                         <span className={`size-1.5 rounded-full ${isInactive ? 'bg-slate-400' : 'bg-primary'}`} />
-                        {isInactive ? 'Деактивирован' : 'Активен'}
+                        {isInactive ? t('workers.deactivated') : t('workers.active')}
                       </span>
                     </td>
 
@@ -215,7 +217,7 @@ const WorkersPage = () => {
           {workers.length === 0 && (
             <div className="text-center py-16 text-slate-400">
               <span className="material-symbols-outlined text-5xl mb-3 block">engineering</span>
-              <p className="font-medium">Работники не найдены</p>
+              <p className="font-medium">{t('workers.empty')}</p>
             </div>
           )}
         </div>

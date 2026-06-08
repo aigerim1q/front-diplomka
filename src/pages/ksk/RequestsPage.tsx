@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { kskServiceRequestsApi } from '@/api/kskServiceRequests'
@@ -14,15 +15,16 @@ import UsersPagination from '@/pages/super-admin/components/UsersPagination'
 
 const PAGE_SIZE = 20
 
-const TABS: { key: 'all' | ServiceRequestStatus; label: string }[] = [
-  { key: 'all', label: 'Все' },
-  { key: 1, label: 'Новые' },
-  { key: 2, label: 'В работе' },
-  { key: 3, label: 'Завершены' },
-  { key: 4, label: 'Отменены' },
+const TABS_KEYS = [
+  { key: 'all' as const, tKey: 'requests.tabAll' },
+  { key: 1 as const, tKey: 'requests.tabNew' },
+  { key: 2 as const, tKey: 'requests.tabInProgress' },
+  { key: 3 as const, tKey: 'requests.tabCompleted' },
+  { key: 4 as const, tKey: 'requests.tabCancelled' },
 ]
 
 const RequestsPage = () => {
+  const { t } = useTranslation()
   const [tab, setTab] = useState<'all' | ServiceRequestStatus>('all')
   const [category, setCategory] = useState('')
   const [page, setPage] = useState(1)
@@ -47,7 +49,7 @@ const RequestsPage = () => {
     <div className="space-y-6">
       {/* Табы по статусам */}
       <div className="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm w-fit flex-wrap">
-        {TABS.map(({ key, label }) => (
+        {TABS_KEYS.map(({ key, tKey }) => (
           <button
             key={key}
             onClick={() => { setTab(key); setPage(1) }}
@@ -57,7 +59,7 @@ const RequestsPage = () => {
                 : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
             }`}
           >
-            {label}
+            {t(tKey)}
           </button>
         ))}
       </div>
@@ -69,7 +71,7 @@ const RequestsPage = () => {
           onChange={(e) => { setCategory(e.target.value); setPage(1) }}
           className="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm w-56"
         >
-          <option value="">Все категории</option>
+          <option value="">{t('requests.allCategories')}</option>
           {SERVICE_REQUEST_CATEGORY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
@@ -78,10 +80,10 @@ const RequestsPage = () => {
           onClick={() => { setCategory(''); setPage(1) }}
           className="px-4 py-2 text-slate-600 font-medium text-sm hover:text-primary transition-colors"
         >
-          Сбросить
+          {t('requests.reset')}
         </button>
         <span className="ml-auto text-sm text-slate-400">
-          Всего: <span className="font-semibold text-slate-700">{totalCount}</span>
+          {t('requests.total')}: <span className="font-semibold text-slate-700">{totalCount}</span>
         </span>
       </div>
 
@@ -96,7 +98,7 @@ const RequestsPage = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
-                  {['Заявка', 'Категория', 'Статус', 'Работник', 'Дата', ''].map((col, i) => (
+                  {[t('requests.colRequest'), t('requests.colCategory'), t('requests.colStatus'), t('requests.colWorker'), t('requests.colDate'), ''].map((col, i) => (
                     <th
                       key={i}
                       className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider"
@@ -155,7 +157,7 @@ const RequestsPage = () => {
             {requests.length === 0 && (
               <div className="text-center py-16 text-slate-400">
                 <span className="material-symbols-outlined text-5xl mb-3 block">inbox</span>
-                <p className="font-medium">Заявки не найдены</p>
+                <p className="font-medium">{t('requests.empty')}</p>
               </div>
             )}
           </div>

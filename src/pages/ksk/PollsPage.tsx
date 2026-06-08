@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { votingsApi } from '@/api/votings'
@@ -9,14 +10,15 @@ import {
 import CreateVotingModal from './components/modals/CreateVotingModal'
 import VotingDetailModal from './components/modals/VotingDetailModal'
 
-const TABS: { key: 'all' | VotingStatus; label: string }[] = [
-  { key: 'all', label: 'Все' },
-  { key: 1, label: 'Черновики' },
-  { key: 2, label: 'Активные' },
-  { key: 3, label: 'Завершённые' },
+const TABS_KEYS = [
+  { key: 'all' as const, tKey: 'polls.tabAll' },
+  { key: 1 as const, tKey: 'polls.tabDrafts' },
+  { key: 2 as const, tKey: 'polls.tabActive' },
+  { key: 3 as const, tKey: 'polls.tabClosed' },
 ]
 
 const PollsPage = () => {
+  const { t } = useTranslation()
   const [tab, setTab] = useState<'all' | VotingStatus>('all')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [selectedVotingId, setSelectedVotingId] = useState<string | null>(null)
@@ -44,7 +46,7 @@ const PollsPage = () => {
     <div className="space-y-6">
       {/* Табы */}
       <div className="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm w-fit">
-        {TABS.map(({ key, label }) => (
+        {TABS_KEYS.map(({ key, tKey }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
@@ -54,7 +56,7 @@ const PollsPage = () => {
                 : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
             }`}
           >
-            {label}
+            {t(tKey)}
           </button>
         ))}
       </div>
@@ -67,8 +69,8 @@ const PollsPage = () => {
       ) : votings.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm text-center py-20 text-slate-400">
           <span className="material-symbols-outlined text-5xl mb-3 block">poll</span>
-          <p className="font-medium">Опросы не найдены</p>
-          <p className="text-sm mt-1">Нажмите «Создать опрос» чтобы добавить первый</p>
+          <p className="font-medium">{t('polls.empty')}</p>
+          <p className="text-sm mt-1">{t('polls.emptyHint')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
@@ -99,7 +101,7 @@ const PollsPage = () => {
                 <div className="flex flex-col items-end gap-2 shrink-0">
                   <div className="flex items-center gap-1.5 text-slate-400 text-xs">
                     <span className="material-symbols-outlined text-[16px]">check_box</span>
-                    <span>{voting.optionsCount} вариантов</span>
+                    <span>{voting.optionsCount} {t('polls.options')}</span>
                   </div>
                   <span className="material-symbols-outlined text-slate-300 text-[20px] group-hover:text-primary transition-colors">
                     chevron_right

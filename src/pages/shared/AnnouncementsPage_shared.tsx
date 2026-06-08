@@ -1,25 +1,25 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { newsApi } from '@/api/news'
 import {
   NewsStatus,
-  NEWS_STATUS_LABELS,
   NEWS_STATUS_COLORS,
-  NEWS_CATEGORY_LABELS,
   NEWS_CATEGORY_COLORS,
   NEWS_CATEGORY_OPTIONS,
 } from '@/types'
 import NewsFormModal from './modals/NewsFormModal'
 import NewsDetailModal from './modals/NewsDetailModal'
 
-const TABS: { key: 'all' | NewsStatus; label: string }[] = [
-  { key: 'all', label: 'Все' },
-  { key: 1, label: 'Черновики' },
-  { key: 2, label: 'Опубликованные' },
-  { key: 3, label: 'Архив' },
+const TABS_KEYS = [
+  { key: 'all' as const, tKey: 'announcements.tabAll' },
+  { key: 1 as const, tKey: 'announcements.tabDrafts' },
+  { key: 2 as const, tKey: 'announcements.tabPublished' },
+  { key: 3 as const, tKey: 'announcements.tabArchived' },
 ]
 
 const AnnouncementsPage = () => {
+  const { t } = useTranslation()
   const [tab, setTab] = useState<'all' | NewsStatus>('all')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
@@ -51,7 +51,7 @@ const AnnouncementsPage = () => {
     <div className="space-y-6">
       {/* Табы */}
       <div className="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm w-fit flex-wrap">
-        {TABS.map(({ key, label }) => (
+        {TABS_KEYS.map(({ key, tKey }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
@@ -61,7 +61,7 @@ const AnnouncementsPage = () => {
                 : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
             }`}
           >
-            {label}
+            {t(tKey)}
           </button>
         ))}
       </div>
@@ -73,7 +73,7 @@ const AnnouncementsPage = () => {
           onChange={(e) => setCategoryFilter(e.target.value)}
           className="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm w-52"
         >
-          <option value="">Все категории</option>
+          <option value="">{t('announcements.allCategories')}</option>
           {NEWS_CATEGORY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
@@ -82,10 +82,10 @@ const AnnouncementsPage = () => {
           onClick={() => setCategoryFilter('')}
           className="px-4 py-2 text-slate-600 font-medium text-sm hover:text-primary transition-colors"
         >
-          Сбросить
+          {t('announcements.reset')}
         </button>
         <span className="ml-auto text-sm text-slate-400">
-          Всего: <span className="font-semibold text-slate-700">{news.length}</span>
+          {t('announcements.total')}: <span className="font-semibold text-slate-700">{news.length}</span>
         </span>
       </div>
 
@@ -97,8 +97,8 @@ const AnnouncementsPage = () => {
       ) : news.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm text-center py-20 text-slate-400">
           <span className="material-symbols-outlined text-5xl mb-3 block">campaign</span>
-          <p className="font-medium">Объявления не найдены</p>
-          <p className="text-sm mt-1">Нажмите «Создать объявление» чтобы добавить первое</p>
+          <p className="font-medium">{t('announcements.empty')}</p>
+          <p className="text-sm mt-1">{t('announcements.emptyHint')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3">
@@ -115,14 +115,14 @@ const AnnouncementsPage = () => {
                     {item.isPinned && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">
                         <span className="material-symbols-outlined text-[12px]">push_pin</span>
-                        Закреплено
+                        {t('announcements.pinned')}
                       </span>
                     )}
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${NEWS_STATUS_COLORS[item.status]}`}>
-                      {NEWS_STATUS_LABELS[item.status]}
+  {t(`announcements.statuses.${['','draft','published','archived'][item.status]}`)}
                     </span>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${NEWS_CATEGORY_COLORS[item.category]}`}>
-                      {NEWS_CATEGORY_LABELS[item.category]}
+  {t(`announcements.categories.${['','general','maintenance','announcement','emergency'][item.category]}`)}
                     </span>
                   </div>
 

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Complex } from '@/types'
 
 interface ComplexCardProps {
@@ -9,6 +10,7 @@ interface ComplexCardProps {
 }
 
 const ComplexCard = ({ complex, onEdit, onLinkKsk, onActivate, onDeactivate }: ComplexCardProps) => {
+  const { t } = useTranslation()
   const isActive = complex.isActive
   const hasKsk = !!complex.linkedKskTenantId
 
@@ -32,7 +34,7 @@ const ComplexCard = ({ complex, onEdit, onLinkKsk, onActivate, onDeactivate }: C
         <div className={`absolute top-3 right-3 text-white text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider ${
           isActive ? 'bg-emerald-500' : 'bg-slate-400'
         }`}>
-          {isActive ? 'Активен' : 'Неактивен'}
+{isActive ? t('common.active') : t('common.inactive')}
         </div>
       </div>
 
@@ -51,13 +53,13 @@ const ComplexCard = ({ complex, onEdit, onLinkKsk, onActivate, onDeactivate }: C
         {/* Регион + КСК статус */}
         <div className="grid grid-cols-2 gap-3 mb-5">
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-            <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mb-1">Регион</p>
+            <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mb-1">{t('complexes.region')}</p>
             <p className="text-sm font-bold text-primary truncate">{complex.region}</p>
           </div>
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
             <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mb-1">КСК</p>
             <p className={`text-sm font-bold ${hasKsk ? 'text-emerald-600' : 'text-slate-400'}`}>
-              {hasKsk ? 'Привязан' : 'Не привязан'}
+              {hasKsk ? t('complexes.kskLinked') : t('complexes.kskNotLinked')}
             </p>
           </div>
         </div>
@@ -70,7 +72,7 @@ const ComplexCard = ({ complex, onEdit, onLinkKsk, onActivate, onDeactivate }: C
             className="flex-1 flex items-center justify-center gap-1.5 border border-slate-200 text-slate-700 py-2 rounded-lg text-sm font-bold hover:bg-slate-50 transition-colors"
           >
             <span className="material-symbols-outlined text-sm">edit</span>
-            Изменить
+            {t('complexes.edit')}
           </button>
 
           {/* Привязать КСК */}
@@ -89,7 +91,7 @@ const ComplexCard = ({ complex, onEdit, onLinkKsk, onActivate, onDeactivate }: C
               className="flex-1 flex items-center justify-center gap-1.5 border border-red-100 text-red-600 py-2 rounded-lg text-sm font-bold hover:bg-red-50 transition-colors"
             >
               <span className="material-symbols-outlined text-sm">block</span>
-              Деактивировать
+              {t('complexes.deactivate')}
             </button>
           ) : (
             <button
@@ -97,7 +99,7 @@ const ComplexCard = ({ complex, onEdit, onLinkKsk, onActivate, onDeactivate }: C
               className="flex-1 flex items-center justify-center gap-1.5 border border-emerald-100 text-emerald-600 py-2 rounded-lg text-sm font-bold hover:bg-emerald-50 transition-colors"
             >
               <span className="material-symbols-outlined text-sm">check_circle</span>
-              Активировать
+              {t('complexes.activate')}
             </button>
           )}
         </div>

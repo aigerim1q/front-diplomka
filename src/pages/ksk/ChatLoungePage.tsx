@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import axios from 'axios'
 import { kskChatApi } from '@/api/kskChat'
 import { useAuth } from '@/hooks/useAuth'
+import { useTranslation } from 'react-i18next'
 import {
   ChatMessageDto,
   ChatMessageDeletedEvent,
@@ -20,6 +21,7 @@ const PAGE_SIZE = 50
 
 const ChatLoungePage = () => {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const kskId = user?.tenantId ?? null
 
   const [messages, setMessages] = useState<ChatMessageDto[]>([])
@@ -214,17 +216,17 @@ const ChatLoungePage = () => {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-12 text-center text-slate-400">
         <span className="material-symbols-outlined text-5xl mb-3 block">forum</span>
-        <p>ЖК не определён. Чат недоступен.</p>
+        <p>{t('chatLounge.noComplex')}</p>
       </div>
     )
   }
 
   const connectionLabel: Record<HubConnectionState, { text: string; color: string }> = {
-    [HubConnectionState.Disconnected]: { text: 'Отключено', color: 'bg-red-500' },
-    [HubConnectionState.Connecting]: { text: 'Подключение...', color: 'bg-amber-500' },
-    [HubConnectionState.Connected]: { text: 'В сети', color: 'bg-emerald-500' },
-    [HubConnectionState.Disconnecting]: { text: 'Отключение...', color: 'bg-amber-500' },
-    [HubConnectionState.Reconnecting]: { text: 'Переподключение...', color: 'bg-amber-500' },
+    [HubConnectionState.Disconnected]: { text: t('chatLounge.statuses.disconnected'), color: 'bg-red-500' },
+    [HubConnectionState.Connecting]: { text: t('chatLounge.statuses.connecting'), color: 'bg-amber-500' },
+    [HubConnectionState.Connected]: { text: t('chatLounge.statuses.connected'), color: 'bg-emerald-500' },
+    [HubConnectionState.Disconnecting]: { text: t('chatLounge.statuses.disconnecting') ?? t('chatLounge.statuses.connecting'), color: 'bg-amber-500' },
+    [HubConnectionState.Reconnecting]: { text: t('chatLounge.statuses.reconnecting'), color: 'bg-amber-500' },
   }
   const conn = connectionLabel[connectionState]
 
@@ -254,7 +256,7 @@ const ChatLoungePage = () => {
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-slate-400">
             <span className="material-symbols-outlined text-5xl mb-2">chat_bubble_outline</span>
-            <p className="font-medium">Сообщений пока нет</p>
+            <p className="font-medium">{t('chatLounge.empty')}</p>
           </div>
         ) : (
           grouped.map((group) => (
@@ -276,7 +278,7 @@ const ChatLoungePage = () => {
                       </span>
                       <span className="text-xs text-slate-400">{formatTime(msg.createdAt)}</span>
                       {msg.editedAt && (
-                        <span className="text-xs text-slate-400 italic">(изменено)</span>
+                        <span className="text-xs text-slate-400 italic">{t('chatLounge.edited')}</span>
                       )}
                     </div>
                     <p className="text-sm text-slate-700 mt-0.5 whitespace-pre-wrap break-words">
@@ -289,13 +291,13 @@ const ChatLoungePage = () => {
                         onClick={() => handleDelete(msg.id)}
                         className="px-2 py-1 rounded-md bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors"
                       >
-                        Удалить
+                        {t('common.delete')}
                       </button>
                       <button
                         onClick={() => setConfirmDeleteId(null)}
                         className="px-2 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium transition-colors"
                       >
-                        Отмена
+                        {t('common.cancel')}
                       </button>
                     </div>
                   ) : (
@@ -322,7 +324,7 @@ const ChatLoungePage = () => {
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Напишите сообщение..."
+            placeholder={t('chatLounge.placeholder')}
             rows={1}
             className="flex-1 resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary max-h-32"
           />
@@ -333,7 +335,7 @@ const ChatLoungePage = () => {
             className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
           >
             <span className="material-symbols-outlined text-[18px]">send</span>
-            {isSending ? 'Отправка...' : 'Отправить'}
+            {isSending ? t('chatLounge.sending') : t('chatLounge.send')}
           </button>
         </div>
       </div>

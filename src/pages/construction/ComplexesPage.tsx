@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { complexesApi } from '@/api/complexes'
 import { Complex } from '@/types'
@@ -13,6 +14,7 @@ const PAGE_SIZE = 9 // кратно 3 колонкам
 
 const ComplexesPage = () => {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
@@ -86,7 +88,7 @@ const ComplexesPage = () => {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
-            placeholder="Поиск по названию, адресу, городу..."
+            placeholder={t('complexes.searchPlaceholder')}
           />
         </div>
         {search && (
@@ -94,7 +96,7 @@ const ComplexesPage = () => {
             onClick={() => { setSearch(''); setPage(1) }}
             className="px-4 py-2 text-slate-600 font-medium text-sm hover:text-primary transition-colors"
           >
-            Сбросить
+            {t('complexes.reset')}
           </button>
         )}
       </div>

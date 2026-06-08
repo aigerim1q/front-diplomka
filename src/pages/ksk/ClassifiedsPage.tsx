@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { kskClassifiedsApi } from '@/api/kskClassifieds'
@@ -12,6 +13,7 @@ import ClassifiedDetailModal from './components/modals/ClassifiedDetailModal'
 const PAGE_SIZE = 20
 
 const ClassifiedsPage = () => {
+  const { t } = useTranslation()
   const [page, setPage] = useState(1)
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
@@ -52,7 +54,7 @@ const ClassifiedsPage = () => {
           <input
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Поиск по названию"
+            placeholder={t('classifieds.searchPlaceholder')}
             className="pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm w-full"
           />
         </div>
@@ -64,7 +66,7 @@ const ClassifiedsPage = () => {
           }}
           className="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm w-52"
         >
-          <option value="">Все категории</option>
+          <option value="">{t('classifieds.allCategories')}</option>
           {CLASSIFIED_CATEGORY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
@@ -78,10 +80,10 @@ const ClassifiedsPage = () => {
           }}
           className="px-4 py-2 text-slate-600 font-medium text-sm hover:text-primary transition-colors"
         >
-          Сбросить
+          {t('classifieds.reset')}
         </button>
         <span className="ml-auto text-sm text-slate-500">
-          Всего: <span className="font-bold text-slate-900">{totalCount}</span>
+          {t('classifieds.total')}: <span className="font-bold text-slate-900">{totalCount}</span>
         </span>
       </div>
 
@@ -95,7 +97,7 @@ const ClassifiedsPage = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                {['Объявление', 'Автор', 'Категория', 'Цена', 'Просмотры', 'Статус', 'Дата', 'Действия'].map((col) => (
+                {[t('classifieds.colAd'), t('classifieds.colAuthor'), t('classifieds.colCategory'), t('classifieds.colPrice'), t('classifieds.colViews'), t('classifieds.colStatus'), t('classifieds.colDate'), t('classifieds.colActions')].map((col) => (
                   <th
                     key={col}
                     className={`px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider ${col === 'Действия' ? 'text-right' : ''}`}
@@ -154,7 +156,7 @@ const ClassifiedsPage = () => {
                           : 'bg-slate-100 text-slate-500'
                       }`}>
                         <span className={`size-1.5 rounded-full ${ad.isActive ? 'bg-primary' : 'bg-slate-400'}`} />
-                        {ad.isActive ? 'Активно' : 'Скрыто'}
+                        {ad.isActive ? t('classifieds.active') : t('classifieds.hidden')}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-500 whitespace-nowrap">
@@ -183,14 +185,14 @@ const ClassifiedsPage = () => {
           {items.length === 0 && (
             <div className="text-center py-16 text-slate-400">
               <span className="material-symbols-outlined text-5xl mb-3 block">storefront</span>
-              <p className="font-medium">Объявления не найдены</p>
+              <p className="font-medium">{t('classifieds.empty')}</p>
             </div>
           )}
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 bg-slate-50/50">
               <p className="text-sm text-slate-500">
-                Страница {page} из {totalPages}
+                {t('classifieds.page')} {page} {t('classifieds.of')} {totalPages}
               </p>
               <div className="flex items-center gap-1">
                 <button
