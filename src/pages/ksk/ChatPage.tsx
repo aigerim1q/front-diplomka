@@ -7,8 +7,7 @@ import {
 } from '@microsoft/signalr'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { kskChatApi } from '@/api/kskChat'
-import { kskResidentsApi } from '@/api/kskResidents'
+import { kskChatApi, ChatResidentItem } from '@/api/kskChat'
 import { useAuth } from '@/hooks/useAuth'
 import { ChatMessageDto, ChatThreadDto } from '@/types'
 
@@ -614,12 +613,13 @@ const NewDmModal = ({ onClose, onStart }: NewDmModalProps) => {
   const [search, setSearch] = useState('')
 
   const { data, isLoading } = useQuery({
-    queryKey: ['residents-for-dm', search],
-    queryFn: () => kskResidentsApi.getAll({ pageSize: 50, ...(search ? {} : {}) }),
+    queryKey: ['residents-for-dm'],
+    queryFn: kskChatApi.getChatResidents,
     staleTime: 30_000,
   })
 
-  const residents = (data?.data?.items ?? []).filter(r => {
+  const allResidents: ChatResidentItem[] = data?.data ?? []
+  const residents = allResidents.filter(r => {
     if (!search) return true
     const q = search.toLowerCase()
     return (r.fullName ?? '').toLowerCase().includes(q) ||

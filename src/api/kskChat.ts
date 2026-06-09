@@ -35,4 +35,14 @@ export const kskChatApi = {
 
   getOrCreateDmThread: (otherUserId: string) =>
     api.post<{ threadId: string }>('/api/chat/threads/with-user', { otherUserId }),
+
+  getChatResidents: () =>
+    api.get<ChatResidentItem[]>('/api/chat/residents'),
+}
+
+export interface ChatResidentItem {
+  id: string
+  fullName: string
+  email: string
+  apartmentNumber: string | null
 }
